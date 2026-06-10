@@ -1,5 +1,14 @@
 FLASK_APP=main.py
+
 DB_HOST=localhost
 DB_DATABASE=rekomendasi_produk_db
 DB_USERNAME=root
 DB_PASSWORD=
+
+JWT_SECRET=secretkey
+JWT_TOKEN_EXPIRES=24    
+JWT_LOCATION=cookies
+JWT_SECURE=False
+JWT_HTTP=True
+JWT_SAMESITE=Lax
+JWT_CSRF=False

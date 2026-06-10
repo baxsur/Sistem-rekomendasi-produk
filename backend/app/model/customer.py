@@ -10,9 +10,9 @@ class Customer(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(20), nullable=False)
     country = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default="customer")
     
     signup_date = db.Column(db.Date, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def setPassword(self, password):
         self.password = generate_password_hash(password)
@@ -30,7 +30,7 @@ class Customer(db.Model):
             "gender": self.gender,
             "country": self.country,
             "singup_date": self.signup_date,
-            "updated_at": self.updated_at
+            "role": self.role
         }
     
     
