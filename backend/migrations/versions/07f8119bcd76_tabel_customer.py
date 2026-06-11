@@ -1,8 +1,8 @@
 """tabel customer
 
-Revision ID: 33f1135b585a
-Revises: 5f5d1fdb6bfc
-Create Date: 2026-06-08 12:34:25.804827
+Revision ID: 07f8119bcd76
+Revises: 
+Create Date: 2026-06-11 21:19:07.035586
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '33f1135b585a'
-down_revision = '5f5d1fdb6bfc'
+revision = '07f8119bcd76'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -26,8 +26,8 @@ def upgrade():
     sa.Column('age', sa.Integer(), nullable=False),
     sa.Column('gender', sa.String(length=20), nullable=False),
     sa.Column('country', sa.String(length=100), nullable=False),
-    sa.Column('signup_date', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('role', sa.String(length=20), nullable=False),
+    sa.Column('signup_date', sa.Date(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('customer', schema=None) as batch_op:
