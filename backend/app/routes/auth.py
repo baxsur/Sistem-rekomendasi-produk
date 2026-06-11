@@ -5,15 +5,7 @@ from flask_jwt_extended import (
     set_access_cookies, set_refresh_cookies, unset_jwt_cookies, unset_refresh_cookies)
 from app.model.customer import Customer
 
-auth = Blueprint("auth", __name__, url_prefix="/api")
-
-# halaman customer(sementara)
-@auth.route("/customer", methods=["GET"])
-@jwt_required()
-def get_customer():
-    current_user = get_jwt_identity()   
-    customer = Customer.query.get(int(current_user))
-    return jsonify({"customer": customer.to_json()}), 200
+auth = Blueprint("auth", __name__, url_prefix="/api/auth")
 
 @auth.route("/register", methods=["GET", "POST"])
 def register():

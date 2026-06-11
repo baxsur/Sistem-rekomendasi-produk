@@ -19,5 +19,10 @@ jwt = JWTManager(app)
 
 from app.model import customer
 from app.routes.auth import auth
+from app.routes.customer_route import customer_rt
 
 app.register_blueprint(auth)
+app.register_blueprint(customer_rt)
+
+for rule in app.url_map.iter_rules():
+    print(rule)
