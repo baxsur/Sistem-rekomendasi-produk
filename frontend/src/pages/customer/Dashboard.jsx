@@ -7,7 +7,7 @@ function Dashboard() {
   const [customer, setCustomer] = useState(null);
 
   useEffect(() => {
-    fetch("/api/customer", {
+    fetch("/api/customer/dashboard_c", {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -17,7 +17,7 @@ function Dashboard() {
   }, []);
 
   const logout = async () => {
-    await fetch("/api/logout", {
+    await fetch("/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });

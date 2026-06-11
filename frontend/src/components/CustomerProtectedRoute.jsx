@@ -5,7 +5,7 @@ function CustomerProtectedRoute({ children }) {
   const [authorized, setAuthorized] = useState(null);
 
   useEffect(() => {
-    fetch("/api/customer", {
+    fetch("/api/customer/dashboard_c", {
       credentials: "include",
     })
       .then((res) => {
