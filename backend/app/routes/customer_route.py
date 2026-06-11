@@ -1,13 +1,24 @@
-from flask import request, Blueprint, jsonify
+from flask import request, Blueprint, redirect, session, url_for, flash, render_template
 from app import app, db
-from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.model.customer import Customer
 
-customer_rt = Blueprint("customer_rt", __name__, url_prefix="/api/customer")
+customer_rt = Blueprint("customer_rt", __name__, url_prefix="/")
 
-@customer_rt.route("/dashboard_c", methods=["GET"])
-@jwt_required()
-def get_customer():
-    current_user = get_jwt_identity()   
-    customer = Customer.query.get(int(current_user))
-    return jsonify({"customer": customer.to_json()}), 200
+@customer_rt.route('/')
+def index():
+    # Jika user sudah login, redirect ke halaman sesuai role
+    if 'user_id' in session:
+        if session.get('user_role') == 'admin':
+            return redirect(url_for('admin_rt.dashboard'))
+        else:
+            return redirect(url_for('customer_rt.dashboard'))
+    
+    # Jika belum login, tampilkan landing page
+    return render_template('index.html')
+
+@customer_rt.route("/dashboard", methods=["GET"])
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    
+    return render_template('customer/dashboard.html')
