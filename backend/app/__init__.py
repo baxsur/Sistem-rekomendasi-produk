@@ -10,7 +10,7 @@ app.secret_key = "kunci rahasia"
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from app.model import customer
+from app.model import customer, product, review, transaction
 from app.routes.auth import auth
 from app.routes.customer_route import customer_rt
 from app.routes.admin_route import admin_rt
