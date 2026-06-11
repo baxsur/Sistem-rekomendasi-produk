@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    external_id = db.Column(db.String(50), index=True, unique=True, nullable=True)
     name = db.Column(db.String(230), nullable=False)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password = db.Column(db.String(180), nullable=False)
@@ -19,19 +20,6 @@ class Customer(db.Model):
         
     def checkPassword(self, password):
         return check_password_hash(self.password, password)
-    
-    def to_json(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "email": self.email,
-            "password": self.password,
-            "age": self.age,
-            "gender": self.gender,
-            "country": self.country,
-            "singup_date": self.signup_date,
-            "role": self.role
-        }
     
     
     
