@@ -1,11 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Dashboard admin</h1>
-</body>
-</html>
+{% extends 'layouts/admin_base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">
+        Product Management
+    </h1>
+
+    <a href="{{ url_for('admin_rt.add_product') }}"
+        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+        Add Product
+    </a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    {% for product in products %}
+    <div class="bg-white rounded-xl shadow-md p-5">
+        <div class="mb-3">
+            <span class="text-sm text-gray-500">
+                {{ product.external_id }}
+            </span>
+            <h2 class="text-lg font-semibold mt-1">
+                {{ product.product_name }}
+            </h2>
+        </div>
+
+        <div class="space-y-2 text-sm">
+
+            <p>
+                <span class="font-medium">Category:</span>
+                {{ product.category }}
+            </p>
+
+            <p>
+                <span class="font-medium">Brand:</span>
+                {{ product.brand }}
+            </p>
+
+            <p>
+                <span class="font-medium">Price:</span>
+                ${{ "%.2f"|format(product.price) }}
+            </p>
+        </div>
+
+        <div class="mt-5">
+            <a href="{{ url_for('admin_rt.product_detail', product_id=product.id) }}"
+                class="block text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
+                Details
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

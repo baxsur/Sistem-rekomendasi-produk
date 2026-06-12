@@ -1,0 +1,51 @@
+<nav class="bg-slate-900 text-white shadow">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-center h-16">
+            <a
+                href="{{ url_for('admin_rt.dashboard') }}"
+                class="font-bold text-xl">
+                Admin Panel
+            </a>
+            <div class="flex items-center gap-8">
+                <a
+                    href="{{ url_for('admin_rt.dashboard') }}"
+                    class="hover:text-blue-400">
+                    Dashboard
+                </a>
+                <a
+                    href="#"
+                    class="hover:text-blue-400">
+
+                    Manage Orders
+                </a>
+                <a
+                    href="#"
+                    class="hover:text-blue-400">
+                    Sales Statistics
+                </a>
+                <a
+                    href="#"
+                    class="hover:text-blue-400">
+                    Profile
+                </a>
+            </div>
+            <form
+                action="{{ url_for('admin_rt.dashboard') }}"
+                method="GET"
+                class="flex gap-2">
+
+                <input
+                    type="text"
+                    name="keyword"
+                    placeholder="Search product..."
+                    class="px-3 py-2 rounded text-black w-64">
+
+                <button
+                    type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
