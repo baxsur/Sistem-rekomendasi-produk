@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome — MyShop{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white rounded-lg shadow px-6 py-12 text-center">
+  <h1 class="text-3xl font-bold text-slate-800 mb-4">Welcome to MyShop</h1>
+  <p class="text-slate-600 mb-6">Simple product recommendation demo. Please login or register to continue.</p>
+  <div class="flex items-center justify-center gap-4">
+    <a class="px-4 py-2 bg-primary text-white rounded-md" href="{{ url_for('auth.login') }}">Login</a>
+    <a class="px-4 py-2 border border-slate-200 rounded-md text-slate-700" href="{{ url_for('auth.register') }}">Register</a>
+  </div>
+</div>
+{% endblock %}

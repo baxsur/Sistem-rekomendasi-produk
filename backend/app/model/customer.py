@@ -14,12 +14,27 @@ class Customer(db.Model):
     role = db.Column(db.String(20), nullable=False, default="customer")
     
     signup_date = db.Column(db.Date, default=datetime.utcnow)
+    # Relationships
+    reviews = db.relationship('Review', backref='customer', lazy='dynamic', cascade="all, delete-orphan")
+    transactions = db.relationship('Transaction', backref='customer', lazy='dynamic', cascade="all, delete-orphan")
     
     def setPassword(self, password):
         self.password = generate_password_hash(password)
         
     def checkPassword(self, password):
         return check_password_hash(self.password, password)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'age': self.age,
+            'gender': self.gender,
+            'country': self.country,
+            'signup_date': None if not self.signup_date else self.signup_date.isoformat(),
+            'role': self.role,
+        }
     
     
     

@@ -1,175 +1,62 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
+{% block title %}Register — MyShop{% endblock %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-        }
+{% block content %}
+<div class="max-w-lg mx-auto bg-white rounded-lg shadow px-6 py-8">
+    <h2 class="text-2xl font-semibold text-slate-800 mb-4">Create your account</h2>
 
-        .container {
-            width: 400px;
-            margin: 50px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, .1);
-        }
+    <form method="POST" class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-slate-700">Name</label>
+            <input name="name" required class="mt-1 block w-full rounded-md border-slate-200 shadow-sm focus:border-accent focus:ring-accent/40">
+            {% if errors.name %}<div class="text-sm text-red-600">{{ errors.name }}</div>{% endif %}
+        </div>
 
-        h2 {
-            text-align: center;
-        }
+        <div>
+            <label class="block text-sm font-medium text-slate-700">Email</label>
+            <input name="email" type="email" required class="mt-1 block w-full rounded-md border-slate-200 shadow-sm focus:border-accent focus:ring-accent/40">
+            {% if errors.email %}<div class="text-sm text-red-600">{{ errors.email }}</div>{% endif %}
+        </div>
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .error {
-            color: red;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-
-        .success {
-            color: green;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container">
-
-        <h2>Register</h2>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="{{ 'danger' if category == 'error' else 'success' }}" role="alert">
-                <small>{{ message }}</small>
-                <button type="button" data-bs-dismiss="alert">X</button>
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" name="name" required>
-
-                {% if errors.name %}
-                <div class="error">
-                    {{ errors.name }}
-                </div>
-                {% endif %}
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Age</label>
+                <input name="age" type="number" min="1" required class="mt-1 block w-full rounded-md border-slate-200">
             </div>
-
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" required>
-
-                {% if errors.email %}
-                <div class="error">
-                    {{ errors.email }}
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" name="age" min="1" required>
-            </div>
-
-            <div class="form-group">
-                <label>Gender</label>
-
-                <select name="gender" required>
-                    <option value="Prefer not to say">-- Select Gender --</option>
-                    <option value="M">Male</option>
-                    <option value="Prefer not to say">
-                        Prefer not to say
-                    </option>
-                    <option value="F">Female</option>
-                    <option value="Non-binary">
-                        Non-binary
-                    </option>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Gender</label>
+                <select name="gender" required class="mt-1 block w-full rounded-md border-slate-200">
+                    <option value="">-- Select --</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer_not">Prefer not to say</option>
                 </select>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>Country</label>
-                <input type="text" name="country" required>
-            </div>
+        <div>
+            <label class="block text-sm font-medium text-slate-700">Country</label>
+            <input name="country" required class="mt-1 block w-full rounded-md border-slate-200">
+        </div>
 
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" required>
+        <div>
+            <label class="block text-sm font-medium text-slate-700">Password</label>
+            <input name="password" type="password" required class="mt-1 block w-full rounded-md border-slate-200">
+            {% if errors.password %}<div class="text-sm text-red-600">{{ errors.password }}</div>{% endif %}
+        </div>
 
-                {% if errors.password %}
-                <div class="error">
-                    {{ errors.password }}
-                </div>
-                {% endif %}
-            </div>
+        <div>
+            <label class="block text-sm font-medium text-slate-700">Confirm password</label>
+            <input name="confirm_password" type="password" required class="mt-1 block w-full rounded-md border-slate-200">
+            {% if errors.confirm_password %}<div class="text-sm text-red-600">{{ errors.confirm_password }}</div>{% endif %}
+        </div>
 
-            <div class="form-group">
-                <label>Confirm Password</label>
-                <input type="password" name="confirm_password" required>
-
-                {% if errors.confirm_password %}
-                <div class="error">
-                    {{ errors.confirm_password }}
-                </div>
-                {% endif %}
-            </div>
-
-            <button type="submit">
-                Register
-            </button>
-
-        </form>
-
-        <p style="text-align:center;margin-top:15px;">
-            Already have an account?
-            <a href="{{ url_for('auth.login') }}">
-                Login
-            </a>
-        </p>
-
-    </div>
-
-</body>
-
-</html>
+        <div class="flex items-center justify-between">
+            <a href="{{ url_for('auth.login') }}" class="text-sm text-slate-600">Already have an account? Login</a>
+            <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md">Register</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
