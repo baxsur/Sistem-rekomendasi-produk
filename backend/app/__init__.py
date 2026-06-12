@@ -20,10 +20,6 @@ app.register_blueprint(auth)
 app.register_blueprint(customer_rt)
 app.register_blueprint(admin_rt)
 
-for rule in app.url_map.iter_rules():
-    print(rule)
-
-
 @app.context_processor
 def inject_current_year():
     return {'current_year': datetime.utcnow().year}
