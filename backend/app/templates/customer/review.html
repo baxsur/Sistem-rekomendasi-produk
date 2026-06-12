@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Review — {{ product.product_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow px-6 py-8">
+  <h2 class="text-xl font-semibold mb-3">Review: {{ product.product_name }}</h2>
+
+  {% if existing %}
+    <div class="mb-4 p-3 bg-blue-50 text-blue-800 rounded">You already submitted a review. Submitting again will update it.</div>
+  {% endif %}
+
+  <form method="post" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-slate-700">Rating (1-5)</label>
+      <select name="rating" required class="mt-1 block w-24 rounded-md border-slate-200">
+        {% for i in range(1,6) %}
+          <option value="{{ i }}" {% if existing and existing.rating==i %}selected{% endif %}>{{ i }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-slate-700">Review</label>
+      <textarea name="review_text" rows="6" class="mt-1 block w-full rounded-md border-slate-200">{{ existing.review_text if existing else '' }}</textarea>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button class="px-4 py-2 bg-primary text-white rounded-md">Submit Review</button>
+      <a class="text-slate-600" href="{{ url_for('customer_rt.orders') }}">Back</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

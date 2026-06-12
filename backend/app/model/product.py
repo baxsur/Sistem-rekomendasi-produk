@@ -16,3 +16,18 @@ class Product(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def update_rating(self, new_rating: int):
+        try:
+            new_rating = float(new_rating)
+        except Exception:
+            return
+
+        # update aggregate rating and count safely
+        self.num_ratings = (self.num_ratings or 0) + 1
+        if not self.avg_rating:
+            self.avg_rating = float(new_rating)
+        else:
+            # incremental average: new_avg = (old_avg*old_count + new_rating)/new_count
+            old_count = self.num_ratings - 1
+            self.avg_rating = (self.avg_rating * old_count + new_rating) / self.num_ratings

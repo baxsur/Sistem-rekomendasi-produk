@@ -1,40 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
+{% block title %}Login — MyShop{% endblock %}
 
-<body>
-    <h1>Login page</h1>
-    <form method="POST" action="{{ url_for('auth.login') }}">
-        <div class="mb-3">
-            <label for="email" class="form-label fw-semibold">Email</label>
-            <input type="email" id="email" name="email" placeholder="name@email.com" required>
-        </div>
-
-        <div class="mb-4">
-            <label for="password" class="form-label fw-semibold">Password</label>
-            <input type="password" id="password" name="password" placeholder="Enter password" required>
-        </div>
-
-        <button type="submit">
-            Login
-        </button>
-
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-lg shadow px-6 py-8">
+    <h2 class="text-2xl font-semibold text-slate-800 mb-4">Welcome back</h2>
+    <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-4">
         <div>
-            <span class="text-muted small">or</span>
+            <label class="block text-sm font-medium text-slate-700">Email</label>
+            <input name="email" type="email" required class="mt-1 block w-full rounded-md border-slate-200 shadow-sm focus:border-accent focus:ring-accent/40" placeholder="name@example.com">
         </div>
 
         <div>
-            <small>Don't have an account yet?</small>
-            <a href="{{ url_for('auth.register') }}">
-                Register now!
-            </a>
+            <label class="block text-sm font-medium text-slate-700">Password</label>
+            <input name="password" type="password" required class="mt-1 block w-full rounded-md border-slate-200 shadow-sm focus:border-accent focus:ring-accent/40" placeholder="••••••">
+        </div>
+
+        <div class="flex items-center justify-between">
+            <div class="text-sm text-slate-600">Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-primary font-medium">Register</a></div>
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-teal-600">Sign in</button>
         </div>
     </form>
-</body>
-
-</html>
+</div>
+{% endblock %}
