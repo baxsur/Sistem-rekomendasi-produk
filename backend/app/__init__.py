@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -21,3 +22,8 @@ app.register_blueprint(admin_rt)
 
 for rule in app.url_map.iter_rules():
     print(rule)
+
+
+@app.context_processor
+def inject_current_year():
+    return {'current_year': datetime.utcnow().year}
