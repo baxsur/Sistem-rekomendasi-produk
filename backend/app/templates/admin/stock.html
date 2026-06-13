@@ -1,0 +1,91 @@
+{% extends "admin/admin_base.html" %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Manajemen Stok</h1>
+    <p class="text-slate-500 text-sm mt-1">Perbarui jumlah stok produk yang sudah ada.</p>
+</div>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="mb-4 space-y-2">
+      {% for category, message in messages %}
+        <div class="px-4 py-3 rounded-lg text-sm font-medium
+          {% if category == 'success' %} bg-emerald-50 text-emerald-600 border border-emerald-200
+          {% elif category == 'danger' %} bg-red-50 text-red-600 border border-red-200
+          {% else %} bg-slate-50 text-slate-600 border border-slate-200 {% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="p-4 border-b border-slate-200 bg-slate-50/50">
+        <div class="relative w-64">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Cari produk..." class="pl-9 pr-4 py-1.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent w-full">
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                    <th class="p-4 font-medium">Nama Produk</th>
+                    <th class="p-4 font-medium">Kategori</th>
+                    <th class="p-4 font-medium">Stok Saat Ini</th>
+                    <th class="p-4 font-medium">Status</th>
+                    <th class="p-4 font-medium text-right">Perbarui Stok</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-sm" id="productTableBody">
+                {% for product in products %}
+                <tr class="hover:bg-slate-50 transition-colors product-row">
+                    <td class="p-4">
+                        <p class="font-medium text-slate-800 product-name">{{ product.product_name }}</p>
+                        <p class="text-slate-500 text-xs">ID: {{ product.id }}</p>
+                    </td>
+                    <td class="p-4 text-slate-600">{{ product.category or '-' }}</td>
+                    <td class="p-4 font-medium text-slate-800">{{ product.stock_quantity }}</td>
+                    <td class="p-4">
+                        {% if product.stock_quantity == 0 %}
+                            <span class="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200 rounded-full text-xs font-medium">Stok Habis</span>
+                        {% elif product.stock_quantity <= 5 %}
+                            <span class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full text-xs font-medium">Stok Menipis</span>
+                        {% else %}
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-xs font-medium">Tersedia</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-right">
+                        <form action="{{ url_for('admin_rt.stock') }}" method="POST" class="flex items-center justify-end gap-2">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <input type="number" name="stock_quantity" value="{{ product.stock_quantity }}" min="0"
+                                class="w-24 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-accent">
+                            <button type="submit" class="bg-primary hover:bg-teal-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                                Simpan
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="p-6 text-center text-slate-400 text-sm">Belum ada produk.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filterProducts() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#productTableBody .product-row').forEach(row => {
+        const name = row.querySelector('.product-name').textContent.toLowerCase();
+        row.style.display = name.includes(query) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

@@ -1,11 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Dashboard admin</h1>
-</body>
-</html>
+{% extends "admin/admin_base.html" %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Statistik Penjualan</h1>
+    <p class="text-slate-500 text-sm mt-1">Ringkasan performa toko Anda hari ini.</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Total Pendapatan</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">Rp {{ "{:,.0f}".format(total_sales).replace(',', '.') }}</p>
+            </div>
+            <div class="w-12 h-12 bg-teal-50 rounded-lg flex items-center justify-center text-primary">
+                <i class="fa-solid fa-wallet text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+            <span class="text-slate-400">Dari transaksi berstatus selesai</span>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Total Pesanan</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">{{ total_orders }}</p>
+            </div>
+            <div class="w-12 h-12 bg-cyan-50 rounded-lg flex items-center justify-center text-accent">
+                <i class="fa-solid fa-bag-shopping text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+            <span class="text-slate-400">Seluruh pesanan masuk</span>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Pesanan Selesai</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">{{ completed_orders }}</p>
+            </div>
+            <div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-500">
+                <i class="fa-solid fa-circle-check text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+            {% if total_orders > 0 %}
+            <span class="text-slate-500 font-medium">{{ ((completed_orders / total_orders) * 100) | round(1) }}% dari total pesanan</span>
+            {% else %}
+            <span class="text-slate-400">Belum ada pesanan</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Total Produk</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">{{ total_products }}</p>
+            </div>
+            <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-500">
+                <i class="fa-solid fa-box-open text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+            <span class="text-slate-500 font-medium">Produk terdaftar di katalog</span>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-lg font-bold text-slate-800">Transaksi Terbaru</h2>
+        <a href="{{ url_for('admin_rt.orders') }}" class="text-sm text-primary font-medium hover:underline">Lihat Semua</a>
+    </div>
+    <div class="overflow-x-auto mt-4">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                    <th class="p-4 font-medium">ID Transaksi</th>
+                    <th class="p-4 font-medium">Tanggal</th>
+                    <th class="p-4 font-medium">Total</th>
+                    <th class="p-4 font-medium">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-sm">
+                {% for t in recent_transactions %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-mono font-medium text-primary">#{{ t.id }}</td>
+                    <td class="p-4 text-slate-600">{{ t.transaction_date.strftime('%d %b %Y, %H:%M') if t.transaction_date else '-' }}</td>
+                    <td class="p-4 font-medium text-slate-800">Rp {{ "{:,.0f}".format(t.total_amount).replace(',', '.') }}</td>
+                    <td class="p-4">
+                        {% if t.status == 'completed' %}
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-xs font-medium">Selesai</span>
+                        {% elif t.status == 'processing' %}
+                            <span class="px-2.5 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-full text-xs font-medium">Diproses</span>
+                        {% elif t.status == 'shipped' %}
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full text-xs font-medium">Dikirim</span>
+                        {% elif t.status == 'cancelled' %}
+                            <span class="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200 rounded-full text-xs font-medium">Dibatalkan</span>
+                        {% else %}
+                            <span class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full text-xs font-medium">Menunggu</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="p-6 text-center text-slate-400 text-sm">Belum ada transaksi.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

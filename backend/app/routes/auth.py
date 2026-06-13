@@ -57,6 +57,12 @@ def login():
             user = Customer.query.filter_by(email=email).first()
 
             if user and user.checkPassword(password):
+                print("METHOD:", request.method, flush=True)
+                print("FORM DATA:", request.form, flush=True)
+                errors = {}
+                if user:
+                    print("STORED HASH:", user.password)
+                    print("CHECK RESULT:", user.checkPassword(password))
                 # Login berhasil
                 session['user_id'] = user.id
                 session['user_name'] = user.name
