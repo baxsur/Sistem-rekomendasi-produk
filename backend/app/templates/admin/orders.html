@@ -1,0 +1,88 @@
+{% extends 'layouts/admin_base.html' %}
+{% block title %}Manage Orders{% endblock %}
+{% block content %}
+
+<div class="bg-white rounded-lg shadow p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold">
+            Manage Orders
+        </h2>
+    </div>
+
+    <form method="GET" class="flex gap-3 mb-6">
+        <select name="status" class="border border-slate-200 rounded-lg px-3 py-2">
+            <option value="">All Statuses</option>
+            {% for status in statuses %}
+            <option value="{{ status }}" {% if status==selected_status %}selected{% endif %}>
+                {{ status|title }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg">
+            Filter
+        </button>
+        <a href="{{ url_for('admin_rt.manage_orders') }}" class="bg-slate-500 text-white px-4 py-2 rounded-lg">
+            Reset
+        </a>
+    </form>
+
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead>
+                <tr class="border-b">
+                    <th class="text-left py-3">ID</th>
+                    <th class="text-left py-3">Customer</th>
+                    <th class="text-left py-3">Product</th>
+                    <th class="text-left py-3">Quantity</th>
+                    <th class="text-left py-3">Total</th>
+                    <th class="text-left py-3">Status</th>
+                    <th class="text-left py-3">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for order in orders %}
+                <tr class="border-b">
+                    <td class="py-3">#{{ order.id }}</td>
+                    <td>{{ order.customer.name }}</td>
+                    <td>{{ order.product.product_name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                    <td>{{ order.status|title }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin_rt.update_order_status', order_id=order.id) }}"
+                            class="flex gap-2">
+
+                            <select name="status" class="border rounded px-2 py-1">
+
+                                <option value="pending" {% if order.status=='pending' %}selected{% endif %}>Pending
+                                </option>
+
+                                <option value="processing" {% if order.status=='processing' %}selected{% endif %}>
+                                    Processing</option>
+
+                                <option value="shipped" {% if order.status=='shipped' %}selected{% endif %}>Shipped
+                                </option>
+
+                                <option value="completed" {% if order.status=='completed' %}selected{% endif %}>
+                                    Completed</option>
+
+                                <option value="cancelled" {% if order.status=='cancelled' %}selected{% endif %}>
+                                    Cancelled</option>
+                            </select>
+
+                            <button class="bg-accent text-white px-3 py-1 rounded">
+                                Update
+                            </button>
+                            
+                        </form>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

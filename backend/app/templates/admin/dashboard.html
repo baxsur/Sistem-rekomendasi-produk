@@ -1,60 +1,102 @@
 {% extends 'layouts/admin_base.html' %}
 
-{% block title %}
-Dashboard
-{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
 
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">
-        Product Management
-    </h1>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 
-    <a href="{{ url_for('admin_rt.add_product') }}"
-        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
-        Add Product
-    </a>
+    <div class="bg-white rounded-lg shadow p-6">
+        <p class="text-sm text-slate-500">Total Products</p>
+        <h2 class="text-3xl font-bold mt-2">{{ total_products }}</h2>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <p class="text-sm text-slate-500">Categories</p>
+        <h2 class="text-3xl font-bold mt-2">{{ total_categories }}</h2>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <p class="text-sm text-slate-500">Orders</p>
+        <h2 class="text-3xl font-bold mt-2">0</h2>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <p class="text-sm text-slate-500">Revenue</p>
+        <h2 class="text-3xl font-bold mt-2">$0</h2>
+    </div>
+
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    {% for product in products %}
-    <div class="bg-white rounded-xl shadow-md p-5">
-        <div class="mb-3">
-            <span class="text-sm text-gray-500">
+<div class="bg-white rounded-lg shadow p-6">
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold">Product Management</h2>
+
+        <a href="{{ url_for('admin_rt.add_product') }}"
+            class="bg-primary hover:bg-teal-800 text-white px-4 py-2 rounded-lg">
+            Add Product
+        </a>
+    </div>
+
+    <form method="GET" class="flex gap-3 items-center mb-6">
+        <input type="hidden" name="keyword" value="{{ request.args.get('keyword', '') }}">
+
+        <select name="category" class="border rounded-lg px-3 py-2">
+            <option value="">All Categories</option>
+
+            {% for category in categories %}
+            <option value="{{ category }}"
+                {% if category == selected_category %}selected{% endif %}>
+                {{ category }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit"
+            class="bg-primary hover:bg-teal-800 text-white px-4 py-2 rounded-lg">
+            Filter
+        </button>
+
+        <a href="{{ url_for('admin_rt.dashboard') }}"
+            class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg">
+            Reset
+        </a>
+    </form>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        {% for product in products %}
+
+        <div class="border rounded-lg p-4 hover:shadow-md transition">
+
+            <p class="text-xs text-slate-500">
                 {{ product.external_id }}
-            </span>
-            <h2 class="text-lg font-semibold mt-1">
+            </p>
+
+            <h3 class="font-semibold mt-2">
                 {{ product.product_name }}
-            </h2>
-        </div>
+            </h3>
 
-        <div class="space-y-2 text-sm">
-
-            <p>
-                <span class="font-medium">Category:</span>
+            <p class="text-sm text-slate-500">
                 {{ product.category }}
             </p>
 
-            <p>
-                <span class="font-medium">Brand:</span>
-                {{ product.brand }}
-            </p>
-
-            <p>
-                <span class="font-medium">Price:</span>
+            <p class="text-primary font-bold mt-3">
                 ${{ "%.2f"|format(product.price) }}
             </p>
+
+            <a href="{{ url_for('admin_rt.product_detail', product_id=product.id) }}"
+                class="inline-block mt-4 text-primary hover:underline">
+                View Details
+            </a>
+
         </div>
 
-        <div class="mt-5">
-            <a href="{{ url_for('admin_rt.product_detail', product_id=product.id) }}"
-                class="block text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
-                Details
-            </a>
-        </div>
+        {% endfor %}
+
     </div>
-    {% endfor %}
 
 </div>
+
 {% endblock %}

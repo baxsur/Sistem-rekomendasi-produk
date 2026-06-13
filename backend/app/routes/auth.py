@@ -1,6 +1,7 @@
 from flask import request, Blueprint, render_template, request, redirect, url_for, flash, session
 from app import db
 from app.model.customer import Customer
+from app.model.admin import Admin
 
 auth = Blueprint("auth", __name__, url_prefix="/")
 
@@ -19,6 +20,9 @@ def register():
     
         if Customer.query.filter_by(email=email).first():
             errors["email"] = "Email is already registered"
+        if Admin.query.filter_by(email=email).first():
+            errors["email"] = "Email is already registered"
+            
         if len(password) < 6:
             errors["password"] = "The minimum password length is 6 characters"
         elif password != confirm_password:
@@ -54,21 +58,33 @@ def login():
             errors['password'] = "Password is required"
 
         if not errors:
+            
+            admin = Admin.query.filter_by(email=email).first()
+            if admin and admin.password == password:    
+                session['admin_id'] = admin.id
+                session['admin_name'] = admin.name
+                flash('Welcome back!', 'success')
+                
+                return redirect(url_for('admin_rt.dashboard'))
+            
             user = Customer.query.filter_by(email=email).first()
 
             if user and user.checkPassword(password):
                 # Login berhasil
                 session['user_id'] = user.id
                 session['user_name'] = user.name
-                session['user_role'] = user.role
-
                 flash('Welcome back!', 'success')
 
-                # Validasi Role: Admin ke admin panel, User biasa ke dashboard
-                if user.role == 'admin':
-                    return redirect(url_for('admin_rt.dashboard'))  
-                else:
-                    return redirect(url_for('customer_rt.dashboard'))  
+                return redirect(url_for('customer_rt.dashboard'))  
+            
+            # cek password tanpa hash
+            elif user and user.password == password:
+                # Login berhasil
+                session['user_id'] = user.id
+                session['user_name'] = user.name
+                flash('Welcome back!', 'success')
+
+                return redirect(url_for('customer_rt.dashboard'))  
 
             else:
                 errors['password'] = 'Bad email or password'

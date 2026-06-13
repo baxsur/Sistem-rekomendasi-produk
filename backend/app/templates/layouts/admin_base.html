@@ -1,33 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}product recommendation system{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f766e',
+                        accent: '#06b6d4',
+                        surface: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+
+<body class="min-h-screen bg-surface text-slate-800">
+
     {% include 'components/header_admin.html' %}
-    <main class="max-w-7xl mx-auto px-6 py-6">
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div id="flash-message" class="mb-4 flex items-center justify-between rounded-lg px-4 py-3
-                                {% if category == 'success' %}
-                                    bg-green-100 text-green-800
-                                {% else %}
-                                    bg-red-100 text-red-800
-                                {% endif %}
-                                ">
-                    <span>{{ message }}</span>
-                    <button onclick="this.parentElement.remove()" class="font-bold ml-4">✕</button>
-                </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        <div class="space-y-2 mb-6">
+            {% for category, msg in messages %}
+            <div class="p-3 rounded-md text-sm
+                            {% if category == 'success' %}
+                                bg-green-50 text-green-800
+                            {% elif category == 'danger' or category == 'error' %}
+                                bg-red-50 text-red-800
+                            {% else %}
+                                bg-blue-50 text-blue-800
+                            {% endif %}">
+                {{ msg }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% endwith %}
 
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
 
     </main>
+
+    <footer class="mt-12 py-6 bg-white border-t">
+        <div class="max-w-7xl mx-auto px-6 text-sm text-slate-500">
+            © {{ current_year }} MyShop Admin Panel
+        </div>
+    </footer>
+
 </body>
+
 </html>

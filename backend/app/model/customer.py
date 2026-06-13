@@ -11,7 +11,6 @@ class Customer(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(20), nullable=False)
     country = db.Column(db.String(100), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default="customer")
     
     signup_date = db.Column(db.Date, default=datetime.utcnow)
     # Relationships

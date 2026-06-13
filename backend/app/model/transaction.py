@@ -13,3 +13,5 @@ class Transaction(db.Model):
     payment_method = db.Column(db.String(80))
     shipping_cost = db.Column(db.Float, default=0.0)
     status = db.Column(db.String(80), default='pending')
+    
+    product = db.relationship("Product", backref="transactions")
