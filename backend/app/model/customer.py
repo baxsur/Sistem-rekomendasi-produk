@@ -11,9 +11,9 @@ class Customer(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(20), nullable=False)
     country = db.Column(db.String(100), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default="customer")
-    
     signup_date = db.Column(db.Date, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    external_id = db.Column(db.String(50), index=True, unique=True, nullable=True)
     # Relationships
     reviews = db.relationship('Review', backref='customer', lazy='dynamic', cascade="all, delete-orphan")
     transactions = db.relationship('Transaction', backref='customer', lazy='dynamic', cascade="all, delete-orphan")
@@ -33,7 +33,8 @@ class Customer(db.Model):
             'gender': self.gender,
             'country': self.country,
             'signup_date': None if not self.signup_date else self.signup_date.isoformat(),
-            'role': self.role,
+            'updated_at': None if not self.updated_at else self.updated_at.isoformat(),
+            'external_id': self.external_id,
         }
     
     

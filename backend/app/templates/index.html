@@ -1,14 +1,157 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome — MyShop{% endblock %}
+{% block title %}Welcome | Cartify{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto bg-white rounded-lg shadow px-6 py-12 text-center">
-  <h1 class="text-3xl font-bold text-slate-800 mb-4">Welcome to MyShop</h1>
-  <p class="text-slate-600 mb-6">Simple product recommendation demo. Please login or register to continue.</p>
-  <div class="flex items-center justify-center gap-4">
-    <a class="px-4 py-2 bg-primary text-white rounded-md" href="{{ url_for('auth.login') }}">Login</a>
-    <a class="px-4 py-2 border border-slate-200 rounded-md text-slate-700" href="{{ url_for('auth.register') }}">Register</a>
-  </div>
-</div>
+{# header removed: use base.html header to avoid duplicate navigation #}
+
+<main>
+  <section class="hero" aria-label="Hero">
+    <div class="container hero-inner">
+      <div class="hero-left">
+        <p class="eyebrow">AI powered recommender</p>
+        <h1 class="hero-title">Personalized product recommendations that convert</h1>
+        <p class="hero-sub">Discover items your customers will love. Fast, privacy-aware, and tailored to each shopper.</p>
+
+        <div class="hero-cta">
+          <a href="{{ url_for('auth.register') }}" class="btn-cta">Get Started</a>
+        </div>
+
+        <div class="search-box">
+          <form action="{{ url_for('customer_rt.search') }}" method="get" class="search-form">
+            <input name="q" type="search" placeholder="Search products, e.g. sneakers" value="{{ request.args.get('q','') }}" aria-label="Search products"/>
+            <button type="submit" class="btn-search">Search</button>
+          </form>
+        </div>
+
+        <ul class="trust-logos" aria-hidden="true">
+          <li><img src="{{ url_for('static', filename='images/google-logo.png') }}" alt="" onerror="this.style.display='none'"/></li>
+          <li><img src="{{ url_for('static', filename='images/stripe-logo.png') }}" alt="" onerror="this.style.display='none'"/></li>
+          <li><img src="{{ url_for('static', filename='images/airbnb-logo.png') }}" alt="" onerror="this.style.display='none'"/></li>
+        </ul>
+      </div>
+
+      <aside class="hero-right" aria-hidden="false">
+        <div class="hero-visual" aria-hidden="true">
+          <img src="{{ url_for('static', filename='images/display.jpg') }}" alt="Featured display"/>
+        </div>
+
+        <div style="margin-top:18px; width:80%; display:flex; justify-content:center">
+          <div class="hero-card card" style="width:100%; max-width:400px">
+            <div class="card-head">
+              <div class="avatar" aria-hidden="true"></div>
+              <div>
+                <div class="card-title">Cartify Assistant</div>
+                <div class="text-muted small">Smart recommendations & quick checkout</div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="highlight">What will you discover today?</div>
+              <ul class="suggestions">
+                <li>Top picks for you — Sneakers</li>
+                <li>Based on your recent views — Headphones</li>
+                <li>Trending in electronics</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+  <section class="container featured" aria-label="Featured">
+    <h3 style="margin-bottom:14px,">Featured For You</h3>
+    <div class="product-grid">
+      <article class="product-card card">
+        <div class="product-image" aria-hidden="true">
+          <img src="{{ url_for('static', filename='images/urban_runner_sneakers.jpg') }}" alt="Urban Runner Sneakers" />
+        </div>
+        <div class="product-body">
+          <div class="product-title">Urban Runner Sneakers</div>
+          <div class="product-meta text-muted">Lightweight · Free shipping</div>
+          <div class="product-row">
+            <div class="price">$79</div>
+            <a href="#" class="btn-outline">View</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card card">
+        <div class="product-image" aria-hidden="true">
+          <img src="{{ url_for('static', filename='images/studio_headphones.jpg') }}" alt="Studio Headphones" />
+        </div>
+        <div class="product-body">
+          <div class="product-title">Studio Headphones</div>
+          <div class="product-meta text-muted">Noise-cancelling · 2-year warranty</div>
+          <div class="product-row">
+            <div class="price">$129</div>
+            <a href="#" class="btn-outline">View</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card card">
+        <div class="product-image" aria-hidden="true">
+          <img src="{{ url_for('static', filename='images/smart_home_speaker.jpg') }}" alt="Smart Home Speaker" />
+        </div>
+        <div class="product-body">
+          <div class="product-title">Smart Home Speaker</div>
+          <div class="product-meta text-muted">Voice assistant · Compact</div>
+          <div class="product-row">
+            <div class="price">$59</div>
+            <a href="#" class="btn-outline">View</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="features" class="container features" aria-label="Features">
+    <div class="feature card">
+      <h4>Global Reach</h4>
+      <p>Scale recommendations to all customers with low latency and high relevance.</p>
+    </div>
+    <div class="feature card">
+      <h4>Instant Response</h4>
+      <p>Fast inference delivers suggestions in real time during browsing.</p>
+    </div>
+    <div class="feature card">
+      <h4>Seamless Integration</h4>
+      <p>Works with your existing product and checkout flows with minimal effort.</p>
+    </div>
+  </section>
+  
+  <section class="container how-it-works" aria-label="How it works" style="margin-top:36px">
+    <h3 style="margin-bottom:16px">How it works</h3>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="icon-circle">1</div>
+        <h5>Collect Signals</h5>
+        <p class="text-muted">We gather browsing, purchase, and rating data securely.</p>
+      </div>
+      <div class="how-step">
+        <div class="icon-circle">2</div>
+        <h5>Model & Rank</h5>
+        <p class="text-muted">Our recommender ranks items by relevance and conversion likelihood.</p>
+      </div>
+      <div class="how-step">
+        <div class="icon-circle">3</div>
+        <h5>Serve & Improve</h5>
+        <p class="text-muted">Real-time suggestions get better as customers interact.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Small accessibility enhancement: focus search input when pressing "/"
+  (function(){
+    document.addEventListener('keydown', function(e){
+      if(e.key === '/'){
+        var el = document.querySelector('.search-box input');
+        if(el){ e.preventDefault(); el.focus(); }
+      }
+    });
+  })();
+</script>
 {% endblock %}

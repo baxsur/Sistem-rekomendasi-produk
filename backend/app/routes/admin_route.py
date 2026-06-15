@@ -1,5 +1,5 @@
-from app import app, db
 from flask import request, render_template, session, flash, redirect, url_for, Blueprint
+
 
 admin_rt = Blueprint("admin_rt", __name__, url_prefix='/')
 

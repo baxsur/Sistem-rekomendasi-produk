@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment | Cartify{% endblock %}
+
+{% block content %}
+<div class="pay-card">
+    <div class="payment-header">
+        <h2>Payment</h2>
+        <div class="muted">Checkout created — proceed to payment</div>
+    </div>
+
+    {% if transactions and transactions|length > 0 %}
+        <div class="payment-list">
+            {% for t in transactions %}
+                <div class="transaction-row">
+                    <div class="left">
+                        <div class="product-info">
+                            <div class="product-title">{{ t.quantity }} × {{ t.product.product_name if t.product else ('Product #' ~ t.product_id) }}</div>
+                            <div class="product-meta">{{ t.product.brand if t.product and t.product.brand else '' }}</div>
+                        </div>
+                    </div>
+                    <div class="amount">Rp {{ '%.0f'|format(t.total_amount) }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <form method="post" class="payment-method">
+            <label class="block text-sm">Payment method</label>
+            <select name="payment_method" class="select-input">
+                <option value="card">Card</option>
+                <option value="paypal">PayPal</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
+
+            <div class="payment-actions">
+                <button type="submit" class="btn-primary">Confirm payment</button>
+                <button type="button" onclick="history.back()" class="btn-ghost">Back</button>
+            </div>
+        </form>
+    {% else %}
+        <div class="text-muted mt-4">No pending transactions to pay.</div>
+    {% endif %}
+</div>
+{% endblock %}

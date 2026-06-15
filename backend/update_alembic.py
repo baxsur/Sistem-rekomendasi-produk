@@ -1,0 +1,11 @@
+import pymysql
+conn = pymysql.connect(host='localhost', user='root', password='', db='aplikasi_data_scientis', charset='utf8mb4')
+cur = conn.cursor()
+cur.execute("SELECT version_num FROM alembic_version")
+print('before:', cur.fetchone())
+cur.execute("UPDATE alembic_version SET version_num=%s", ('e114562ad0f1',))
+conn.commit()
+cur.execute("SELECT version_num FROM alembic_version")
+print('after:', cur.fetchone())
+cur.close()
+conn.close()

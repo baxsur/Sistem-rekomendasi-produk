@@ -1,6 +1,8 @@
 from flask import request, Blueprint, render_template, request, redirect, url_for, flash, session
 from app import db
 from app.model.customer import Customer
+from app.model.admin import Admin
+from werkzeug.security import check_password_hash
 
 auth = Blueprint("auth", __name__, url_prefix="/")
 
@@ -55,20 +57,27 @@ def login():
 
         if not errors:
             user = Customer.query.filter_by(email=email).first()
+            print(f"[DEBUG] login attempt email={email} found_user={bool(user)}")
 
             if user and user.checkPassword(password):
+                print(f"[DEBUG] password check for {email}: OK")
                 # Login berhasil
                 session['user_id'] = user.id
                 session['user_name'] = user.name
-                session['user_role'] = user.role
 
+                # Tentukan role berdasarkan tabel admin (DB final)
+                admin = Admin.query.filter_by(email=email).first()
+                print(f"[DEBUG] admin record found={bool(admin)}")
+                if admin and check_password_hash(admin.password, password):
+                    print(f"[DEBUG] admin password check for {email}: OK")
+                    session['user_role'] = 'admin'
+                    flash('Welcome back (admin)!', 'success')
+                    return redirect(url_for('admin_rt.dashboard'))
+
+                # default customer
+                session['user_role'] = 'customer'
                 flash('Welcome back!', 'success')
-
-                # Validasi Role: Admin ke admin panel, User biasa ke dashboard
-                if user.role == 'admin':
-                    return redirect(url_for('admin_rt.dashboard'))  
-                else:
-                    return redirect(url_for('customer_rt.dashboard'))  
+                return redirect(url_for('customer_rt.dashboard'))
 
             else:
                 errors['password'] = 'Bad email or password'

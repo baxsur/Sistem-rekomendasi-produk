@@ -1,62 +1,60 @@
 {% extends 'base.html' %}
 
-{% block title %}Register — MyShop{% endblock %}
+{% block title %}Register | Cartify{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto bg-white rounded-lg shadow px-6 py-8">
-    <h2 class="text-2xl font-semibold text-slate-800 mb-4">Create your account</h2>
+<section class="auth-split container" aria-label="Register">
+    <div class="auth-visual card bg-panel-left">
+        <div class="auth-visual-inner">
+            <h3>Create your account</h3>
+            <p class="muted">Join Cartify to receive personalized recommendations, track orders, and checkout quickly.</p>
 
-    <form method="POST" class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium text-slate-700">Name</label>
-            <input name="name" required class="mt-1 block w-full rounded-md border-slate-200 shadow-sm focus:border-accent focus:ring-accent/40">
-            {% if errors.name %}<div class="text-sm text-red-600">{{ errors.name }}</div>{% endif %}
+            <ul class="visual-features" style="margin-top:16px;">
+                <li>Personalized product recommendations</li>
+                <li>Secure checkout & saved orders</li>
+                <li>Easy returns and order tracking</li>
+            </ul>
         </div>
+    </div>
 
-        <div>
-            <label class="block text-sm font-medium text-slate-700">Email</label>
-            <input name="email" type="email" required class="mt-1 block w-full rounded-md border-slate-200 shadow-sm focus:border-accent focus:ring-accent/40">
-            {% if errors.email %}<div class="text-sm text-red-600">{{ errors.email }}</div>{% endif %}
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-slate-700">Age</label>
-                <input name="age" type="number" min="1" required class="mt-1 block w-full rounded-md border-slate-200">
+    <div class="auth-form-card card">
+        <div class="form-shell">
+            <div class="form-header">
+                <div class="form-badge">✚</div>
+                <div>
+                    <div class="title">Create an account</div>
+                    <div class="subtitle">Get tailored product suggestions and manage your purchases.</div>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-slate-700">Gender</label>
-                <select name="gender" required class="mt-1 block w-full rounded-md border-slate-200">
-                    <option value="">-- Select --</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                    <option value="prefer_not">Prefer not to say</option>
-                </select>
-            </div>
-        </div>
 
-        <div>
-            <label class="block text-sm font-medium text-slate-700">Country</label>
-            <input name="country" required class="mt-1 block w-full rounded-md border-slate-200">
-        </div>
+            <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form">
+                <input name="name" required class="input" placeholder="Full name">
+                <input name="email" type="email" required class="input" placeholder="name@example.com">
 
-        <div>
-            <label class="block text-sm font-medium text-slate-700">Password</label>
-            <input name="password" type="password" required class="mt-1 block w-full rounded-md border-slate-200">
-            {% if errors.password %}<div class="text-sm text-red-600">{{ errors.password }}</div>{% endif %}
-        </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <input name="age" type="number" min="1" required class="input" placeholder="Age">
+                    <select name="gender" required class="input">
+                        <option value="">Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer_not">Prefer not to say</option>
+                    </select>
+                </div>
 
-        <div>
-            <label class="block text-sm font-medium text-slate-700">Confirm password</label>
-            <input name="confirm_password" type="password" required class="mt-1 block w-full rounded-md border-slate-200">
-            {% if errors.confirm_password %}<div class="text-sm text-red-600">{{ errors.confirm_password }}</div>{% endif %}
-        </div>
+                <input name="country" required class="input" placeholder="Country">
+                <input name="password" type="password" required class="input" placeholder="Create a password">
+                <input name="confirm_password" type="password" required class="input" placeholder="Confirm password">
 
-        <div class="flex items-center justify-between">
-            <a href="{{ url_for('auth.login') }}" class="text-sm text-slate-600">Already have an account? Login</a>
-            <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md">Register</button>
+                <div class="auth-helpers">
+                    <div class="text-muted">Already have an account? <a href="{{ url_for('auth.login') }}" class="btn-link">Login</a></div>
+                </div>
+
+                <div class="auth-actions" style="margin-top:18px;">
+                    <button type="submit" class="btn-cta">Register</button>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
+    </div>
+</section>
 {% endblock %}

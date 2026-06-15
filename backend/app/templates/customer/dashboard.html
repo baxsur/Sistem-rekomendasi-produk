@@ -1,33 +1,148 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard — MyShop{% endblock %}
+{% block title %}Dashboard | Cartify{% endblock %}
 
 {% block content %}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="col-span-2 bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-2">Welcome, {{ session.get('user_name', 'Customer') }}</h2>
-            <p class="text-slate-600">Here is a quick overview of your recent activity.</p>
-
-            <div class="mt-6 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-sm text-slate-500">Orders</div>
-                        <div class="text-2xl font-bold">{{ current_orders_count if current_orders_count is defined else 0 }}</div>
+    <!-- Hero / Promo section inspired by reference -->
+    <div class="relative mb-8">
+        <div class="hero-panel p-8 bg-panel-left">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold">Save Time & Money — Recommended just for you</h1>
+                    <p class="mt-3 text-slate-200">Product recommendations yang dipersonalisasi berdasarkan riwayat transaksi kamu. Pilih dan checkout dengan cepat.</p>
+                    <div class="mt-6 flex gap-3">
+                        <a href="{{ url_for('customer_rt.orders') }}" class="px-4 py-2 bg-accent text-slate-900 rounded-md font-medium">View orders</a>
+                        <a href="{{ url_for('customer_rt.profile') }}" class="px-4 py-2 border border-white/20 text-white rounded-md">Edit profile</a>
                     </div>
-                    <div>
-                        <a href="{{ url_for('customer_rt.orders') }}" class="px-3 py-2 bg-accent text-white rounded-md">View orders</a>
+                </div>
+                <div class="hidden md:block">
+                    <img src="{{ url_for('static', filename='images/e-commerce.jpg') }}" alt="e-commerce" class="hero-highlight" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="col-span-2">
+            <div class="welcome-card">
+                <h2 class="text-xl font-semibold mb-2">Welcome, {{ session.get('user_name', 'Customer') }}</h2>
+                <p class="text-slate-600">Rekomendasi produk untuk kamu—pilih yang paling kamu suka.</p>
+
+                <div class="mt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-sm text-slate-500">Orders</div>
+                            <div class="text-2xl font-bold">{{ current_orders_count if current_orders_count is defined else 0 }}</div>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('customer_rt.orders') }}" class="view-orders-btn">View orders</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <aside class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-sm font-medium text-slate-700">Profile</h3>
-            <div class="mt-2 text-slate-600">
-                <div>{{ session.get('user_name') }}</div>
-                <div class="text-sm">Role: {{ session.get('user_role') }}</div>
-            </div>
-            <a href="{{ url_for('customer_rt.profile') }}" class="mt-4 inline-block text-primary">Edit profile</a>
-        </aside>
+        {# Profile panel removed to simplify dashboard per request #}
     </div>
+
+    <section class="mt-8">
+        <div class="flex items-end justify-between mb-4">
+            <div>
+                <h3 class="text-2xl font-extrabold text-primary">Recommended for you</h3>
+            </div>
+            <div class="text-sm text-slate-700 bg-primary/10 px-3 py-1 rounded">
+                {{ recommendations|length }} items
+            </div>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+
+
+        {% if recommendations and recommendations|length > 0 %}
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for p in recommendations %}
+
+                    {% set discount_pct = p.discount_pct if p.discount_pct is not none else 0 %}
+                    {% set has_discount = discount_pct > 0 %}
+                    {% set base_price = p.price if p.price is not none else 0 %}
+                    {% set final_price = base_price * (1 - (discount_pct / 100)) if has_discount else base_price %}
+
+                            <div class="recommendation-card">
+                                <div class="relative">
+                                    <a href="{{ url_for('customer_rt.product_detail', product_id=p.id) }}">
+                                        <div class="h-40 bg-slate-100 flex items-center justify-center">
+                                            <div class="text-slate-400 text-sm">Image</div>
+                                        </div>
+                                    </a>
+
+                                    <!-- quick add cart icon -->
+                                    <a href="{{ url_for('customer_rt.cart_add', product_id=p.id) }}" class="absolute top-3 right-3 bg-white/90 p-2 rounded-full shadow-md hover:bg-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 7h13l-2-7M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+                                        </svg>
+                                    </a>
+                                </div>
+
+                                <div class="p-4 md:p-6">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                        <div class="p-title text-sm truncate" title="{{ p.product_name }}">{{ p.product_name }}</div>
+                                        <div class="p-meta text-xs truncate" title="{{ p.brand }}">{{ p.brand if p.brand else (p.category if p.category else '—') }}</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 flex items-center justify-between">
+                                <div class="text-sm font-semibold text-primary">
+                                    {% if has_discount %}
+                                        <span>{{ '%.0f'|format(final_price) }}</span>
+                                        <span class="ml-1 text-xs font-normal text-slate-500 line-through">{{ '%.0f'|format(base_price) }}</span>
+                                    {% else %}
+                                        <span>{{ '%.0f'|format(base_price) }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="flex items-center gap-1 text-xs text-slate-600">
+                                    <span class="text-yellow-500">★</span>
+                                    <span>{{ '%.1f'|format(p.avg_rating if p.avg_rating is not none else 0) }}</span>
+                                    <span class="text-slate-400">({{ p.num_ratings if p.num_ratings is not none else 0 }})</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 flex items-center justify-between">
+                                <div class="text-xs">
+                                    {% if p.stock_quantity is not none and p.stock_quantity <= 0 %}
+                                        <span class="px-2 py-1 rounded bg-red-50 text-red-600">Out</span>
+                                    {% elif p.stock_quantity is not none and p.stock_quantity <= 5 %}
+                                        <span class="px-2 py-1 rounded bg-amber-50 text-amber-700">Low</span>
+                                    {% else %}
+                                        <span class="px-2 py-1 rounded bg-green-50 text-green-700">Ready</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-xs">
+                                    {% if has_discount %}
+                                        <span class="px-2 py-1 rounded bg-primary/10 text-primary">-{{ '%.0f'|format(discount_pct) }}%</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mt-3 flex items-center gap-2 p-actions">
+                                <a href="{{ url_for('customer_rt.product_detail', product_id=p.id) }}" class="inline-flex items-center px-3 py-2 btn-primary text-sm hover:opacity-95 flex-1 justify-center">
+                                    Lihat detail
+                                </a>
+                                <a href="{{ url_for('customer_rt.cart_add', product_id=p.id) }}" class="inline-flex items-center px-3 py-2 bg-accent text-slate-900 rounded-md text-sm hover:opacity-95">
+                                    Add
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="text-slate-700 font-medium">Belum ada rekomendasi.</div>
+                <div class="text-sm text-slate-500 mt-1">Pastikan kamu punya transaksi yang sudah selesai agar model bisa belajar.</div>
+                <a href="{{ url_for('customer_rt.orders') }}" class="mt-4 inline-block px-3 py-2 bg-accent text-white rounded-md text-sm">Lihat orders</a>
+            </div>
+        {% endif %}
+    </section>
 {% endblock %}
