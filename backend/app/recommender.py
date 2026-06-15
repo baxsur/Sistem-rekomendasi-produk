@@ -6,10 +6,13 @@ from app import db
 from app.model.transaction import Transaction
 from app.model.product import Product
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'recommender')
-os.makedirs(MODEL_PATH, exist_ok=True)
-SIM_PATH = os.path.join(MODEL_PATH, 'similarity_df.pkl')
-UI_PATH = os.path.join(MODEL_PATH, 'user_item.pkl')
+# Model storage directory (configurable via env var). Default: backend/data/models
+MODEL_DIR = os.environ.get('MODEL_DIR')
+if not MODEL_DIR:
+    MODEL_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'models'))
+os.makedirs(MODEL_DIR, exist_ok=True)
+SIM_PATH = os.path.join(MODEL_DIR, 'similarity_df.pkl')
+UI_PATH = os.path.join(MODEL_DIR, 'user_item.pkl')
 
 
 def build_and_save(min_transactions=1):
