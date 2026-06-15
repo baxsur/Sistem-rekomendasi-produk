@@ -59,8 +59,17 @@ def login():
 
         if not errors:
             
+            # pengecekan admin, bila berhasil --> dashboard admin
             admin = Admin.query.filter_by(email=email).first()
+            # andai kata admin baru dibuat langsung di sql database
             if admin and admin.password == password:    
+                session['admin_id'] = admin.id
+                session['admin_name'] = admin.name
+                flash('Welcome back!', 'success')
+                
+                return redirect(url_for('admin_rt.dashboard'))
+            # semisal password sudah dirubah ke hash di halaman profile admin
+            elif admin and admin.checkPassword(password):
                 session['admin_id'] = admin.id
                 session['admin_name'] = admin.name
                 flash('Welcome back!', 'success')
@@ -68,7 +77,6 @@ def login():
                 return redirect(url_for('admin_rt.dashboard'))
             
             user = Customer.query.filter_by(email=email).first()
-
             if user and user.checkPassword(password):
                 # Login berhasil
                 session['user_id'] = user.id
@@ -77,15 +85,6 @@ def login():
 
                 return redirect(url_for('customer_rt.dashboard'))  
             
-            # cek password tanpa hash
-            elif user and user.password == password:
-                # Login berhasil
-                session['user_id'] = user.id
-                session['user_name'] = user.name
-                flash('Welcome back!', 'success')
-
-                return redirect(url_for('customer_rt.dashboard'))  
-
             else:
                 errors['password'] = 'Bad email or password'
 
@@ -95,7 +94,7 @@ def login():
     # GET request
     return render_template('auth/login.html', errors={})
 
-@auth.route('/logout')
+@auth.route('/logout', methods=["POST"])
 def logout():
     session.clear()
     flash('Logout was successful', 'success')

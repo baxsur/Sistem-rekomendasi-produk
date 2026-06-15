@@ -1,102 +1,123 @@
-{% extends 'layouts/admin_base.html' %}
+{% extends "admin/admin_base.html" %}
 
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-
-    <div class="bg-white rounded-lg shadow p-6">
-        <p class="text-sm text-slate-500">Total Products</p>
-        <h2 class="text-3xl font-bold mt-2">{{ total_products }}</h2>
-    </div>
-
-    <div class="bg-white rounded-lg shadow p-6">
-        <p class="text-sm text-slate-500">Categories</p>
-        <h2 class="text-3xl font-bold mt-2">{{ total_categories }}</h2>
-    </div>
-
-    <div class="bg-white rounded-lg shadow p-6">
-        <p class="text-sm text-slate-500">Orders</p>
-        <h2 class="text-3xl font-bold mt-2">0</h2>
-    </div>
-
-    <div class="bg-white rounded-lg shadow p-6">
-        <p class="text-sm text-slate-500">Revenue</p>
-        <h2 class="text-3xl font-bold mt-2">$0</h2>
-    </div>
-
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Sales Statistics</h1>
+    <p class="text-slate-500 text-sm mt-1">Summary of Your Store Performance Today.</p>
 </div>
 
-<div class="bg-white rounded-lg shadow p-6">
-
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold">Product Management</h2>
-
-        <a href="{{ url_for('admin_rt.add_product') }}"
-            class="bg-primary hover:bg-teal-800 text-white px-4 py-2 rounded-lg">
-            Add Product
-        </a>
-    </div>
-
-    <form method="GET" class="flex gap-3 items-center mb-6">
-        <input type="hidden" name="keyword" value="{{ request.args.get('keyword', '') }}">
-
-        <select name="category" class="border rounded-lg px-3 py-2">
-            <option value="">All Categories</option>
-
-            {% for category in categories %}
-            <option value="{{ category }}"
-                {% if category == selected_category %}selected{% endif %}>
-                {{ category }}
-            </option>
-            {% endfor %}
-        </select>
-
-        <button type="submit"
-            class="bg-primary hover:bg-teal-800 text-white px-4 py-2 rounded-lg">
-            Filter
-        </button>
-
-        <a href="{{ url_for('admin_rt.dashboard') }}"
-            class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg">
-            Reset
-        </a>
-    </form>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-        {% for product in products %}
-
-        <div class="border rounded-lg p-4 hover:shadow-md transition">
-
-            <p class="text-xs text-slate-500">
-                {{ product.external_id }}
-            </p>
-
-            <h3 class="font-semibold mt-2">
-                {{ product.product_name }}
-            </h3>
-
-            <p class="text-sm text-slate-500">
-                {{ product.category }}
-            </p>
-
-            <p class="text-primary font-bold mt-3">
-                ${{ "%.2f"|format(product.price) }}
-            </p>
-
-            <a href="{{ url_for('admin_rt.product_detail', product_id=product.id) }}"
-                class="inline-block mt-4 text-primary hover:underline">
-                View Details
-            </a>
-
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Total Income</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">${{ "{:,.0f}".format(total_sales).replace(',', '.') }}</p>
+            </div>
+            <div class="w-12 h-12 bg-teal-50 rounded-lg flex items-center justify-center text-primary">
+                <i class="fa-solid fa-wallet text-xl"></i>
+            </div>
         </div>
-
-        {% endfor %}
-
+        <div class="mt-4 flex items-center text-sm">
+            <span class="text-slate-400">From Transactions With Completed Status</span>
+        </div>
     </div>
 
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Order Quantity</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">{{ total_orders }}</p>
+            </div>
+            <div class="w-12 h-12 bg-cyan-50 rounded-lg flex items-center justify-center text-accent">
+                <i class="fa-solid fa-bag-shopping text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+            <span class="text-slate-400">All Incoming Orders</span>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Completed Orders</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">{{ completed_orders }}</p>
+            </div>
+            <div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-500">
+                <i class="fa-solid fa-circle-check text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+            {% if total_orders > 0 %}
+            <span class="text-slate-500 font-medium">{{ ((completed_orders / total_orders) * 100) | round(1) }}% Of The Total Order</span>
+            {% else %}
+            <span class="text-slate-400">No Orders Yet</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Total Product</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">{{ total_products }}</p>
+            </div>
+            <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-500">
+                <i class="fa-solid fa-box-open text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+            <span class="text-slate-500 font-medium">Products Listed in the Catalog</span>
+        </div>
+    </div>
 </div>
 
+<!-- Recent Transactions -->
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-lg font-bold text-slate-800">Latest Transactions</h2>
+        <a href="{{ url_for('admin_rt.orders') }}" class="text-sm text-primary font-medium hover:underline">See All</a>
+    </div>
+    <div class="overflow-x-auto mt-4">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                    <th class="p-4 font-medium">Transaction ID</th>
+                    <th class="p-4 font-medium">Date</th>
+                    <th class="p-4 font-medium">Total</th>
+                    <th class="p-4 font-medium">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-sm">
+                {% for t in recent_transactions %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-mono font-medium text-primary">#{{ t.id }}</td>
+                    <td class="p-4 text-slate-600">{{ t.transaction_date.strftime('%d %b %Y, %H:%M') if t.transaction_date else '-' }}</td>
+                    <td class="p-4 font-medium text-slate-800">${{ t.total_amount }}</td>
+                    <td class="p-4">
+                        {% if t.status == 'completed' %}
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-xs font-medium">Completed</span>
+                        {% elif t.status == 'processing' %}
+                            <span class="px-2.5 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-full text-xs font-medium">Processing</span>
+                        {% elif t.status == 'shipped' %}
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full text-xs font-medium">Shipped</span>
+                        {% elif t.status == 'cancelled' %}
+                            <span class="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200 rounded-full text-xs font-medium">Cancelled</span>
+                        {% else %}
+                            <span class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full text-xs font-medium">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="p-6 text-center text-slate-400 text-sm">No Transactions Yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

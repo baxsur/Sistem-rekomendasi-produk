@@ -1,0 +1,187 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Ratings & Reviews{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Rating & Reviews</h1>
+    <p class="text-slate-500 text-sm mt-1">See What Customers are Saying About Your Product.</p>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <div>
+            <p class="text-2xl font-bold text-slate-800">{{ avg_rating }}</p>
+            <p class="text-xs text-slate-500">Average Rating</p>
+        </div>
+    </div>
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg bg-cyan-50 text-cyan-500 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-comment"></i>
+        </div>
+        <div>
+            <p class="text-2xl font-bold text-slate-800">{{ total_reviews }}</p>
+            <p class="text-xs text-slate-500">Total Reviews</p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mb-6 flex flex-wrap gap-3">
+    <form method="GET" id="reviewFilterForm" class="flex flex-wrap gap-3 flex-1">
+        <div class="relative w-64">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" name="keyword" value="{{ keyword }}" placeholder="Search customer or product..."
+                onkeyup="clearTimeout(window.searchTimer); window.searchTimer=setTimeout(()=>document.getElementById('reviewFilterForm').submit(),500)"
+                class="pl-9 pr-4 py-1.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent w-full">
+        </div>
+        <select name="rating" onchange="document.getElementById('reviewFilterForm').submit()"
+            class="border border-slate-200 rounded-lg py-1.5 px-3 text-sm focus:ring-accent focus:outline-none bg-white text-slate-700 font-medium">
+            <option value="">All Ratings</option>
+            {% for i in range(5, 0, -1) %}
+            <option value="{{ i }}" {% if rating_filter==i %}selected{% endif %}>{{ i }} Star{{ 's' if i > 1 }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for item in reviews %}
+    {% set r = item.review %}
+    {% set customer = item.customer %}
+    {% set product = item.product %}
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+        <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
+                    {{ (customer.name[0] | upper) if customer and customer.name else '?' }}
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-800 text-sm">{{ customer.name if customer else 'Customer' }}
+                    </h3>
+                    <p class="text-xs text-slate-500">{{ r.review_date.strftime('%d %b %Y') if r.review_date else '-' }}
+                    </p>
+                </div>
+            </div>
+            <div class="flex text-amber-400 text-sm">
+                {% for i in range(1, 6) %}
+                {% if i <= (r.rating or 0) %} <i class="fa-solid fa-star"></i>
+                    {% else %}
+                    <i class="fa-regular fa-star text-slate-300"></i>
+                    {% endif %}
+                    {% endfor %}
+            </div>
+        </div>
+        <p class="text-slate-600 text-sm mb-4 flex-1">
+            {% if r.review_text %}
+            "{{ r.review_text }}"
+            {% else %}
+            <span class="text-slate-400 italic">No Comment.</span>
+            {% endif %}
+        </p>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-box text-slate-400 text-xs"></i>
+                <span class="text-xs text-slate-500 font-medium">{{ product.product_name if product else 'Product not
+                    found' }}</span>
+            </div>
+            <button onclick="document.getElementById('modalReview{{ r.id }}').classList.remove('hidden')"
+                class="w-7 h-7 rounded-lg text-accent hover:bg-cyan-50 flex items-center justify-center transition-colors"
+                title="Detail">
+                <i class="fa-solid fa-eye text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Detail Review -->
+    <div id="modalReview{{ r.id }}" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-slate-800">Review Detail</h2>
+                <button onclick="document.getElementById('modalReview{{ r.id }}').classList.add('hidden')"
+                    class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-2 text-sm text-slate-600">
+                <div class="flex justify-between"><span>Review ID</span><span class="font-medium text-slate-800">#{{
+                        r.id }}</span></div>
+                <div class="flex justify-between"><span>Date</span><span class="font-medium text-slate-800">{{
+                        r.review_date.strftime('%d %b %Y, %H:%M:%S') if r.review_date else '-' }}</span></div>
+                <div class="border-t border-slate-200 pt-2 mt-2"></div>
+                <div class="flex justify-between"><span>Customer Name</span><span class="font-medium text-slate-800">{{
+                        customer.name if customer else '-' }}</span></div>
+                <div class="flex justify-between"><span>Customer Email</span><span class="font-medium text-slate-800">{{
+                        customer.email if customer else '-' }}</span></div>
+                <div class="flex justify-between"><span>Customer ID</span><span class="font-medium text-slate-800">{{
+                        customer.external_id if customer else '-' }}</span></div>
+                <div class="border-t border-slate-200 pt-2 mt-2"></div>
+                <div class="flex justify-between"><span>Product Name</span><span class="font-medium text-slate-800">{{
+                        product.product_name if product else '-' }}</span></div>
+                <div class="flex justify-between"><span>Product ID</span><span class="font-medium text-slate-800">{{
+                        product.external_id if product else '-' }}</span></div>
+                <div class="border-t border-slate-200 pt-2 mt-2"></div>
+                <div class="flex justify-between"><span>Rating</span>
+                    <span class="text-amber-400">
+                        {% for i in range(1, 6) %}
+                        {% if i <= (r.rating or 0) %} <i class="fa-solid fa-star"></i>
+                            {% else %}
+                            <i class="fa-regular fa-star text-slate-300"></i>
+                            {% endif %}
+                            {% endfor %}
+                    </span>
+                </div>
+                <div>
+                    <span class="block mb-1">Review Text</span>
+                    <p class="font-medium text-slate-800 bg-slate-50 p-3 rounded-lg">
+                        {% if r.review_text %}{{ r.review_text }}{% else %}<span class="text-slate-400 italic">No
+                            Comment.</span>{% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-4">
+                <button type="button" onclick="document.getElementById('modalReview{{ r.id }}').classList.add('hidden')"
+                    class="px-4 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50">Close</button>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-full text-center text-slate-400 text-sm py-10">
+        No Reviews Yet.
+    </div>
+    {% endfor %}
+</div>
+
+{% if pagination.pages > 1 %}
+<div class="flex items-center justify-between mt-6 px-2">
+    <p class="text-sm text-slate-500">
+        Page {{ pagination.page }} of {{ pagination.pages }} ({{ pagination.total }} review)
+    </p>
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin_rt.reviews', page=pagination.prev_num, keyword=keyword, rating=rating_filter) if pagination.has_prev else '#' }}"
+            class="px-3 py-1.5 rounded-lg text-sm border border-slate-200 {% if not pagination.has_prev %}text-slate-300 cursor-not-allowed{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+            Previous
+        </a>
+        {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if p %}
+        <a href="{{ url_for('admin_rt.reviews', page=p, keyword=keyword, rating=rating_filter) }}"
+            class="px-3 py-1.5 rounded-lg text-sm border {% if p == pagination.page %}bg-primary text-white border-primary{% else %}border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+            {{ p }}
+        </a>
+        {% else %}
+        <span class="px-3 py-1.5 text-sm text-slate-400">...</span>
+        {% endif %}
+        {% endfor %}
+        <a href="{{ url_for('admin_rt.reviews', page=pagination.next_num, keyword=keyword, rating=rating_filter) if pagination.has_next else '#' }}"
+            class="px-3 py-1.5 rounded-lg text-sm border border-slate-200 {% if not pagination.has_next %}text-slate-300 cursor-not-allowed{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+            Next
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

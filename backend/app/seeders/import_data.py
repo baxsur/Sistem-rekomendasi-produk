@@ -5,10 +5,12 @@ from app import app, db
 from app.model.customer import Customer
 from app.model.product import Product
 from app.model.transaction import Transaction
+from app.model.review import Review
 
 CUSTOMERS_CSV = "app/seeders/customers_login.csv"
 PRODUCTS_CSV = "app/seeders/products.csv"
 TRANSACTIONS_CSV = "app/seeders/transactions.csv"
+REVIEWS_CSV = "app/seeders/reviews.csv"
 
 
 def import_customers():
@@ -109,18 +111,43 @@ def import_transactions():
     db.session.commit()
 
     print("Transactions imported")
+    
+def import_reviews():
+    df = pd.read_csv(REVIEWS_CSV)
 
+    for i, (_, row) in enumerate(df.iterrows(), start=1):
 
-if __name__ == "__main__":
-    with app.app_context():
+        customer = Customer.query.filter_by(
+            external_id=row["customer_id"]
+        ).first()
 
-        print("Importing customers...")
-        import_customers()
+        product = Product.query.filter_by(
+            external_id=row["product_id"]
+        ).first()
 
-        print("Importing products...")
-        import_products()
+        if not customer or not product:
+            continue
 
-        print("Importing transactions...")
-        import_transactions()
+        review_date = datetime.strptime(
+            row["review_date"],
+            "%Y-%m-%d"
+        )
 
-        print("Done.")
+        review = Review(
+            customer_id=customer.id,
+            product_id=product.id,
+            review_text=str(row["review_text"]),
+            rating=int(row["rating"]),
+            helpful_votes=int(row["helpful_votes"]),
+            review_date=review_date
+        )
+
+        db.session.add(review)
+
+        if i % 1000 == 0:
+            db.session.commit()
+            print(f"{i} reviews imported")
+
+    db.session.commit()
+
+    print("Reviews import completed")
