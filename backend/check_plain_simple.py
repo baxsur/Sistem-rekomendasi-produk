@@ -1,6 +1,6 @@
 import csv
 import sys
-from app import app
+from app import create_app
 from app.model.customer import Customer
 
 CSV_DEFAULT = '..\\customers.csv'
@@ -29,6 +29,8 @@ def find_plain_password(csv_path, email):
             if e and e.strip().lower() == email.strip().lower():
                 return pwd
     return None
+
+app = create_app()
 
 if __name__ == '__main__':
     csv_path = sys.argv[1] if len(sys.argv) > 1 else CSV_DEFAULT

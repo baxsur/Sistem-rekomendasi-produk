@@ -18,8 +18,11 @@ def register():
         age = request.form.get("age")
         gender = request.form.get("gender")
         country = request.form.get("country")
-    
+
+            
         if Customer.query.filter_by(email=email).first():
+            errors["email"] = "Email is already registered"
+        if Admin.query.filter_by(email=email).first():
             errors["email"] = "Email is already registered"
         if len(password) < 6:
             errors["password"] = "The minimum password length is 6 characters"
@@ -56,29 +59,33 @@ def login():
             errors['password'] = "Password is required"
 
         if not errors:
+            
+            # pengecekan admin, bila berhasil --> dashboard admin
+            admin = Admin.query.filter_by(email=email).first()
+            # andai kata admin baru dibuat langsung di sql database
+            if admin and admin.password == password:    
+                session['admin_id'] = admin.id
+                session['admin_name'] = admin.name
+                flash('Welcome back!', 'success')
+                
+                return redirect(url_for('admin_rt.dashboard'))
+            # semisal password sudah dirubah ke hash di halaman profile admin
+            elif admin and admin.checkPassword(password):
+                session['admin_id'] = admin.id
+                session['admin_name'] = admin.name
+                flash('Welcome back!', 'success')
+                
+                return redirect(url_for('admin_rt.dashboard'))
+            
             user = Customer.query.filter_by(email=email).first()
-            print(f"[DEBUG] login attempt email={email} found_user={bool(user)}")
-
             if user and user.checkPassword(password):
-                print(f"[DEBUG] password check for {email}: OK")
                 # Login berhasil
                 session['user_id'] = user.id
                 session['user_name'] = user.name
-
-                # Tentukan role berdasarkan tabel admin (DB final)
-                admin = Admin.query.filter_by(email=email).first()
-                print(f"[DEBUG] admin record found={bool(admin)}")
-                if admin and check_password_hash(admin.password, password):
-                    print(f"[DEBUG] admin password check for {email}: OK")
-                    session['user_role'] = 'admin'
-                    flash('Welcome back (admin)!', 'success')
-                    return redirect(url_for('admin_rt.dashboard'))
-
-                # default customer
-                session['user_role'] = 'customer'
                 flash('Welcome back!', 'success')
-                return redirect(url_for('customer_rt.dashboard'))
 
+                return redirect(url_for('customer_rt.dashboard'))  
+            
             else:
                 errors['password'] = 'Bad email or password'
 

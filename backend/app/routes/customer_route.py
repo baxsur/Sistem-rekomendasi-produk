@@ -38,7 +38,6 @@ def dashboard():
     except Exception:
         recs = []
 
-    # show recent activity summary
     try:
         current_orders_count = (
             db.session.query(func.count(Transaction.id))
@@ -179,13 +178,11 @@ def checkout(product_id):
         total = unit_price * qty * (1 - (discount / 100.0))
 
         try:
-            # create pending transaction(s) and redirect to payment stub
             new_tx = Transaction(customer_id=user_id, product_id=product.id, quantity=qty,
                                  unit_price=unit_price, total_amount=total, discount=discount, status='pending')
             db.session.add(new_tx)
             db.session.commit()
 
-            # store pending tx ids in session for payment confirmation
             pending = session.get('pending_tx_ids', [])
             pending.append(new_tx.id)
             session['pending_tx_ids'] = pending
@@ -198,8 +195,6 @@ def checkout(product_id):
 
     return render_template('customer/checkout.html', product=product)
 
-# --- Cart endpoints (session-backed) -------------------------------------------------
-@customer_rt.route('/cart/add/<int:product_id>', methods=['GET'])
 def cart_add(product_id):
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
@@ -326,7 +321,6 @@ def review_product(product_id):
     user_id = session['user_id']
     product = Product.query.get_or_404(product_id)
 
-    # Ensure user purchased and transaction completed
     purchase = Transaction.query.filter_by(customer_id=user_id, product_id=product_id, status='completed').first()
     if not purchase:
         flash('You can only review products you have completed transactions for', 'warning')
@@ -353,7 +347,6 @@ def review_product(product_id):
 
             db.session.commit()
 
-            # recompute aggregate rating for product
             avg = db.session.query(func.avg(Review.rating)).filter(Review.product_id == product_id).scalar() or 0.0
             cnt = db.session.query(func.count(Review.id)).filter(Review.product_id == product_id).scalar() or 0
             product.avg_rating = float(avg)

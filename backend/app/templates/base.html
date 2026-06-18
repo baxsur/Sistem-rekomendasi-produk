@@ -10,28 +10,24 @@
       html,body { height:100%; }
       body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 
-      /* Global typography & layout */
       :root { --base-font-size: 16px; }
       html { font-size: var(--base-font-size); }
       body { line-height: 1.45; font-size: 1rem; }
 
       h1,h2,h3,h4,h5,h6 { color: var(--text-on-dark); margin:0 0 .4rem 0; line-height:1.1; }
-      h1 { font-size: 1.875rem; } /* 30px */
-      h2 { font-size: 1.25rem; }   /* 20px */
-      h3 { font-size: 1.125rem; }  /* 18px */
+      h1 { font-size: 1.875rem; } 
+      h2 { font-size: 1.25rem; } 
+      h3 { font-size: 1.125rem; }  
 
       p, a, label, button, input, select, textarea { font-family: inherit; }
 
-      /* Page container utilities */
       .container { max-width: 1200px; margin: 0 auto; padding-left: 1rem; padding-right: 1rem; }
       .max-w-6xl { max-width: 1200px; }
 
-      /* Spacing scale helpers (small set) */
       .gap-sm { gap: 8px; }
       .gap-md { gap: 12px; }
       .gap-lg { gap: 20px; }
 
-      /* Forms & controls */
       input[type="text"], input[type="search"], input[type="number"], select, textarea {
         background: rgba(255,255,255,0.03);
         border: 1px solid var(--border-weak);
@@ -43,37 +39,31 @@
       input:focus, select:focus, textarea:focus { box-shadow: 0 6px 20px rgba(16,24,40,0.28); border-color: rgba(123,189,232,0.9); }
       label { color: var(--muted); font-size: 0.9rem; }
 
-      /* Buttons refinements */
       .btn-primary { font-weight: 700; letter-spacing: .2px; }
       .btn-ghost { color: var(--text-on-dark); }
       .btn-primary:active, .btn-ghost:active { transform: translateY(1px); }
 
-      /* Cards and content blocks */
       .card { padding: 18px; }
       .card .h-40 { height: 160px; }
 
-      /* Product grid helper */
       .product-grid { display:grid; grid-template-columns: repeat(2,1fr); gap:16px; }
       @media(min-width:768px){ .product-grid { grid-template-columns: repeat(3,1fr); } }
       @media(min-width:1024px){ .product-grid { grid-template-columns: repeat(4,1fr); gap:20px; } }
 
-      /* Accessibility helpers */
       a { color: inherit; }
       a:focus { outline: 3px solid rgba(123,189,232,0.18); outline-offset: 3px; }
 
-      /* Small visual polish */
       .rounded-lg { border-radius: 12px; }
       .muted { color: var(--muted-weak); }
 
-      /* Design tokens (color palette dari referensi) */
       :root {
-        --c-900: #001D39; /* darkest */
+        --c-900: #001D39; 
         --c-800: #0A4174;
         --c-700: #49769F;
         --c-600: #4E8EA2;
         --c-500: #6EA2B3;
         --c-400: #7BBDE8;
-        --c-300: #BDD8E9; /* light */
+        --c-300: #BDD8E9; 
 
         --brand-primary: var(--c-600);
         --brand-accent: var(--c-400);
@@ -85,7 +75,6 @@
         --border-weak: rgba(255,255,255,0.08);
       }
 
-      /* Page background (subtle) — the rich layered background is applied to the hero only */
       body {
         min-height: 100vh;
         background-color: var(--bg-page);
@@ -93,14 +82,11 @@
         color: var(--text-on-dark);
       }
 
-      /* Hero panel background: layered glow, vertical stripes and gradient.
-         This should be used on the top hero container so it does not span the whole page. */
       .hero-panel {
         border-radius: 12px;
         overflow: hidden;
         color: var(--text-on-dark);
         background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2));
-        /* stacked background: deep base gradient -> central bluish glow -> vertical bars using palette */
         background-image:
           linear-gradient(180deg, rgba(2,8,18,0.9) 0%, rgba(2,8,18,0.95) 70%),
           radial-gradient(520px 220px at 54% 64%, rgba(122,99,241,0.18), rgba(123,189,232,0.06) 30%, transparent 60%),
@@ -110,7 +96,6 @@
         position: relative;
       }
 
-      /* strong vertical glow on the right panel to mimic the bright striping */
       .hero-panel::after {
         content: '';
         position: absolute;
@@ -124,14 +109,12 @@
         border-radius: 12px;
       }
 
-      /* inner translucent overlay used within the hero for the highlight card */
       .hero-inner-overlay {
         background: var(--glass);
         border-radius: 10px;
         padding: 18px;
       }
 
-      /* Utility components */
       .btn-primary { background: linear-gradient(90deg,var(--brand-accent),var(--brand-primary)); color: white; padding: 0.5rem 0.9rem; border-radius: 10px; display:inline-flex; align-items:center; gap:8px; box-shadow:0 10px 30px rgba(9,20,40,0.45); border: none; }
       .btn-ghost { background: transparent; color: var(--text-on-dark); border: 1px solid var(--border-weak); padding:0.45rem 0.8rem; border-radius:10px }
       .card { background: rgba(255,255,255,0.98); color: #0f1724; border-radius:14px; box-shadow:0 10px 30px rgba(2,6,23,0.06); }
@@ -143,12 +126,10 @@
       .glass { background: var(--glass); backdrop-filter: blur(6px); border: 1px solid var(--border-weak); }
       .transition-smooth { transition: all .22s cubic-bezier(.2,.9,.2,1); }
 
-      /* header / nav specific */
       .nav-link { color: var(--muted); padding: 6px 8px; border-radius:8px; font-weight:600; }
       .nav-link:hover { background: rgba(255,255,255,0.03); color: var(--text-on-dark); }
       .search-input { background: rgba(255,255,255,0.03); border: 1px solid var(--border-weak); color: var(--text-on-dark); }
 
-      /* nav and footer refinements */
       .site-nav a { color: rgba(34, 46, 56, 0.75); font-weight: 600; }
       .site-nav a:hover { color: #0f766e; }
       .site-footer { color: #94a3b8; }
@@ -158,9 +139,9 @@
         theme: {
           extend: {
             colors: {
-              primary: '#0f766e', /* teal-700 */
-              accent: '#06b6d4', /* cyan-500 */
-              surface: '#f8fafc', /* slate-50 */
+              primary: '#0f766e',
+              accent: '#06b6d4', 
+              surface: '#f8fafc', 
             }
           }
         }
@@ -235,7 +216,6 @@
       <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
       <script>
-        // Render flashed messages into JS and show as toasts
         (function(){
           const flashed = {{ get_flashed_messages(with_categories=true)|tojson|safe }} || [];
           if(!flashed || !flashed.length) return;
@@ -252,12 +232,9 @@
                 <button class=\"toast-close\" aria-label=\"Close\">×</button>\n
               </div>`;
             container.appendChild(toast);
-            // dismiss handler
             const remove = ()=>{ toast.classList.add('toast-hide'); setTimeout(()=> toast.remove(),400); };
             toast.querySelector('.toast-close').addEventListener('click', remove);
-            // auto dismiss after 4s
             setTimeout(remove, 4000);
-            // entrance
             requestAnimationFrame(()=> toast.classList.add('toast-show'));
           }
           for(const [cat, msg] of flashed){ createToast(cat, msg); }

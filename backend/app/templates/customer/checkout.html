@@ -6,7 +6,7 @@
 <div class="max-w-lg mx-auto">
     <div class="card p-6">
     <h2 class="text-xl font-semibold">Checkout: {{ product.product_name }}</h2>
-    <div class="mt-4 text-lg font-semibold">Price: {{ '%.0f'|format(product.price if product.price else 0) }}</div>
+    <div class="mt-4 text-lg font-semibold">Price: {{ (product.price if product.price else 0) }}</div>
 
     <form method="post" class="mt-4 space-y-4">
         <div>

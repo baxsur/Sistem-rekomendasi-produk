@@ -26,7 +26,7 @@
             <div class="order-meta">{{ t.transaction_date.strftime('%Y-%m-%d %H:%M') if t.transaction_date else '' }}</div>
           </div>
           <div class="order-qty">Qty: {{ t.quantity }}</div>
-          <div class="order-price">Rp {{ '%.0f'|format(t.total_amount) }}</div>
+          <div class="order-price">$ {{t.total_amount}}</div>
           <div class="flex items-center gap-3">
             {% set pill = 'other' %}
             {% if t.status=='completed' %}{% set pill = 'completed' %}{% elif t.status=='pending' %}{% set pill = 'pending' %}{% endif %}

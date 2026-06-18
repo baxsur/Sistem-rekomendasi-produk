@@ -1,0 +1,232 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Manage Orders{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Manage Orders</h1>
+    <p class="text-slate-500 text-sm mt-1">View Incoming Orders and Change Shipping Status.</p>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="p-4 border-b border-slate-200 flex flex-wrap gap-3 items-center bg-slate-50/50">
+        <form method="GET" id="filterForm" class="flex flex-wrap gap-3 items-center flex-1">
+    
+            <div class="relative w-64">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" name="keyword" value="{{ keyword }}" placeholder="Search customer or product..."
+                    onkeyup="clearTimeout(window.searchTimer); window.searchTimer=setTimeout(()=>document.getElementById('filterForm').submit(),500)"
+                    class="pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent w-full">
+                {% if keyword %}
+                <a href="{{ url_for('admin_rt.orders', status=selected_status, date_filter=date_filter, year=selected_year, month=selected_month) }}"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </a>
+                {% endif %}
+            </div>
+    
+            <select name="status" onchange="document.getElementById('filterForm').submit()"
+                class="border border-slate-200 rounded-lg py-1.5 px-3 text-sm focus:ring-accent focus:outline-none bg-white text-slate-700 font-medium">
+                <option value="">All Statuses</option>
+                {% for s in available_statuses %}
+                <option value="{{ s }}" {% if selected_status==s %}selected{% endif %}>
+                    {{ s|capitalize }}
+                </option>
+                {% endfor %}
+            </select>
+    
+            <select name="date_filter" onchange="document.getElementById('filterForm').submit()"
+                class="border border-slate-200 rounded-lg py-1.5 px-3 text-sm focus:ring-accent focus:outline-none bg-white text-slate-700 font-medium">
+                <option value="">All Time</option>
+                <option value="today" {% if date_filter=='today' %}selected{% endif %}>Today</option>
+                <option value="this_week" {% if date_filter=='this_week' %}selected{% endif %}>This Week</option>
+                <option value="month" {% if date_filter=='month' %}selected{% endif %}>By Month</option>
+                <option value="year" {% if date_filter=='year' %}selected{% endif %}>By Year</option>
+            </select>
+    
+            {% if date_filter == 'month' or date_filter == 'year' %}
+            <select name="year" onchange="document.getElementById('filterForm').submit()"
+                class="border border-slate-200 rounded-lg py-1.5 px-3 text-sm focus:ring-accent focus:outline-none bg-white text-slate-700 font-medium">
+                <option value="">Select Year</option>
+                {% for y in available_years %}
+                <option value="{{ y }}" {% if selected_year==y %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+    
+            {% if date_filter == 'month' %}
+            <select name="month" onchange="document.getElementById('filterForm').submit()"
+                class="border border-slate-200 rounded-lg py-1.5 px-3 text-sm focus:ring-accent focus:outline-none bg-white text-slate-700 font-medium">
+                <option value="">Select Month</option>
+                {% set months =
+                ['January','February','March','April','May','June','July','August','September','October','November','December']
+                %}
+                {% for m in range(1, 13) %}
+                <option value="{{ m }}" {% if selected_month==m %}selected{% endif %}>{{ months[m-1] }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+    
+            {% if date_filter %}
+            <a href="{{ url_for('admin_rt.orders', keyword=keyword, status=selected_status) }}"
+                class="text-sm text-slate-500 hover:text-slate-700 underline">Reset Date</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                    <th class="p-4 font-medium">ID Transaction</th>
+                    <th class="p-4 font-medium">Date</th>
+                    <th class="p-4 font-medium">Customer</th>
+                    <th class="p-4 font-medium">Product</th>
+                    <th class="p-4 font-medium">Total Price</th>
+                    <th class="p-4 font-medium">Current Status</th>
+                    <th class="p-4 font-medium text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-sm">
+                {% for item in orders %}
+                {% set t = item.transaction %}
+                {% set customer = item.customer %}
+                {% set product = item.product %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-mono font-medium text-primary">#{{ t.id }}</td>
+                    <td class="p-4 text-slate-600 text-xs">
+                        {{ t.transaction_date.strftime('%d %b %Y') }}<br>
+                        <span class="text-slate-400">{{ t.transaction_date.strftime('%H:%M:%S') }}</span>
+                    </td>
+                    <td class="p-4">
+                        <p class="font-medium text-slate-800">{{ customer.name if customer else 'Customer not found' }}</p>
+                        {% if customer %}
+                        <p class="text-xs text-slate-500">{{ customer.email }}</p>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-slate-600">
+                        {{ product.product_name if product else '-' }}
+                        <p class="text-xs text-slate-400">ID: {{ product.external_id if product else '-' }}</p>
+                    </td>
+                    <td class="p-4 font-medium text-slate-800">${{ t.total_amount }}</td>
+                    <td class="p-4">
+                        {% if t.status == 'completed' %}
+                        <span
+                            class="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-xs font-medium">Completed</span>
+                        {% elif t.status == 'processing' %}
+                        <span
+                            class="px-2.5 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-full text-xs font-medium">Processing</span>
+                        {% elif t.status == 'shipped' %}
+                        <span
+                            class="px-2.5 py-1 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full text-xs font-medium">Shipped</span>
+                        {% elif t.status == 'cancelled' %}
+                        <span
+                            class="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200 rounded-full text-xs font-medium">Cancelled</span>
+                        {% elif t.status == 'refunded' %}
+                        <span
+                            class="px-2.5 py-1 bg-slate-100 text-slate-600 border border-slate-300 rounded-full text-xs font-medium">Refunded</span>
+                        {% else %}
+                        <span
+                            class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full text-xs font-medium">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button onclick="document.getElementById('modalDetail{{ t.id }}').classList.remove('hidden')"
+                                class="w-8 h-8 rounded-lg text-accent hover:bg-cyan-50 flex items-center justify-center transition-colors"
+                                title="Detail">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <form action="{{ url_for('admin_rt.orders') }}" method="POST" class="flex justify-end">
+                                <input type="hidden" name="transaction_id" value="{{ t.id }}">
+                                <select name="status" onchange="this.form.submit()"
+                                    class="border border-slate-200 rounded py-1.5 px-2 text-xs focus:ring-accent focus:outline-none bg-white text-slate-700 font-medium">
+                                    <option value="pending" {% if t.status=='pending' %}selected{% endif %}>Pending</option>
+                                    <option value="processing" {% if t.status=='processing' %}selected{% endif %}>Processing</option>
+                                    <option value="shipped" {% if t.status=='shipped' %}selected{% endif %}>Shipped</option>
+                                    <option value="completed" {% if t.status=='completed' %}selected{% endif %}>Completed</option>
+                                    <option value="cancelled" {% if t.status=='cancelled' %}selected{% endif %}>Cancelled</option>
+                                    <option value="refunded" {% if t.status=='refunded' %}selected{% endif %}>Refunded</option>
+                                </select>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                
+                <!-- Modal Detail -->
+                <div id="modalDetail{{ t.id }}" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold text-slate-800">Order #{{ t.id }} Detail</h2>
+                            <button onclick="document.getElementById('modalDetail{{ t.id }}').classList.add('hidden')"
+                                class="text-slate-400 hover:text-slate-600">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-2 text-sm text-slate-600">
+                            <div class="flex justify-between"><span>Date</span><span class="font-medium text-slate-800">{{
+                                    t.transaction_date.strftime('%d %b %Y, %H:%M:%S') }}</span></div>
+                            <div class="flex justify-between"><span>Customer</span><span class="font-medium text-slate-800">{{
+                                    customer.name if customer else '-' }}</span></div>
+                            <div class="flex justify-between"><span>Product</span><span class="font-medium text-slate-800">{{ product.product_name
+                                    if product else '-' }}</span></div>
+                            <div class="flex justify-between"><span>Product ID</span><span class="font-medium text-slate-800">{{ product.external_id if
+                                    product else '-' }}</span></div>
+                            <div class="flex justify-between"><span>Quantity</span><span class="font-medium text-slate-800">{{
+                                    t.quantity }}</span></div>
+                            <div class="flex justify-between"><span>Unit Price</span><span class="font-medium text-slate-800">${{
+                                    t.unit_price }}</span></div>
+                            <div class="flex justify-between"><span>Discount</span><span class="font-medium text-slate-800">{{
+                                    t.discount or 0 }}%</span></div>
+                            <div class="flex justify-between"><span>Payment Method</span><span class="font-medium text-slate-800">{{
+                                    t.payment_method|replace('_', ' ')|title }}</span></div>
+                            <div class="flex justify-between border-t border-slate-200 pt-2 mt-2"><span
+                                    class="font-semibold text-slate-700">Total</span><span class="font-bold text-slate-800">${{
+                                    t.total_amount * (1 - t.discount / 100) }}</span></div>
+                        </div>
+                        <form action="{{ url_for('admin_rt.orders') }}" method="POST" id="statusForm{{ t.id }}" class="hidden">
+                            <input type="hidden" name="transaction_id" value="{{ t.id }}">
+                            <input type="hidden" name="status" id="statusInput{{ t.id }}">
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="p-6 text-center text-slate-400 text-sm">No Orders Yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- pagination -->
+{% if pagination.pages > 1 %}
+<div class="flex items-center justify-between p-4">
+    <p class="text-sm text-slate-500">
+        Page {{ pagination.page }} of {{ pagination.pages }} ({{ pagination.total }} order)
+    </p>
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin_rt.orders', page=pagination.prev_num, keyword=keyword, status=selected_status, date_filter=date_filter, year=selected_year, month=selected_month) if pagination.has_prev else '#' }}"
+            class="px-3 py-1.5 rounded-lg text-sm border border-slate-200 {% if not pagination.has_prev %}text-slate-300 cursor-not-allowed{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+            Previous
+        </a>
+
+        {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if p %}
+        <a href="{{ url_for('admin_rt.orders', page=p, keyword=keyword, status=selected_status, date_filter=date_filter, year=selected_year, month=selected_month) }}"
+            class="px-3 py-1.5 rounded-lg text-sm border {% if p == pagination.page %}bg-primary text-white border-primary{% else %}border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+            {{ p }}
+        </a>
+        {% else %}
+        <span class="px-3 py-1.5 text-sm text-slate-400">...</span>
+        {% endif %}
+        {% endfor %}
+
+        <a href="{{ url_for('admin_rt.orders', page=pagination.next_num, keyword=keyword, status=selected_status, date_filter=date_filter, year=selected_year, month=selected_month) if pagination.has_next else '#' }}"
+            class="px-3 py-1.5 rounded-lg text-sm border border-slate-200 {% if not pagination.has_next %}text-slate-300 cursor-not-allowed{% else %}text-slate-600 hover:bg-slate-50{% endif %}">
+            Next
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

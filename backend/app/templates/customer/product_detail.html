@@ -17,7 +17,7 @@
             <div class="product-info">
                 <h2 class="text-2xl font-bold">{{ product.product_name }}</h2>
                 <div class="text-sm product-meta">{{ product.brand if product.brand else product.category }}</div>
-                <div class="mt-4 product-price">Rp {{ '%.0f'|format(product.price if product.price else 0) }}</div>
+                <div class="mt-4 product-price">$ {{ '%.0f'|format(product.price if product.price else 0) }}</div>
                 <div class="mt-2 product-meta">Rating: {{ '%.1f'|format(product.avg_rating if product.avg_rating is not none else 0) }} ({{ product.num_ratings or 0 }})</div>
 
                 <form action="{{ url_for('customer_rt.cart_add', product_id=product.id) }}" method="get" class="mt-6">
