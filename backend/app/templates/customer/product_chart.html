@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Sales Chart — {{ product.product_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto chart-card">
+    <div class="chart-header">
+        <h2>Sales (last 14 days): {{ product.product_name }}</h2>
+        <button onclick="history.back()" class="chart-back">Back</button>
+    </div>
+
+    <canvas id="salesChart" class="chart-canvas" data-labels='{{ labels|tojson|safe }}' data-data='{{ data|tojson|safe }}'></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const canvas = document.getElementById('salesChart');
+const labels = JSON.parse(canvas.getAttribute('data-labels') || '[]');
+const data = JSON.parse(canvas.getAttribute('data-data') || '[]');
+
+const ctx = canvas.getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Units sold',
+            data: data,
+            backgroundColor: 'rgba(99,102,241,0.9)'
+        }]
+    },
+    options: {
+        scales: {
+            x: { stacked: false, grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: 'rgba(11,22,50,0.04)' } }
+        },
+        plugins: { legend: { display: false } },
+        maintainAspectRatio: false
+    }
+});
+</script>
+
+{% endblock %}

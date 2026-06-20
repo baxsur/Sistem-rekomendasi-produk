@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Cart | Cartify{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+        <div class="card p-6 profile-shell">
+        <div class="cart-hero">
+            <div>
+                <h1>Your Cart</h1>
+                <p>Items you've added — ready to checkout</p>
+            </div>
+            <div>
+                <a href="{{ url_for('customer_rt.dashboard') }}" class="btn-ghost">Continue shopping</a>
+            </div>
+        </div>
+    {% if items and items|length > 0 %}
+        <div class="cart-grid mt-4">
+            <div class="cart-list">
+                {% for it in items %}
+                <div class="cart-item glass p-3 rounded-lg">
+                    <div class="product-image">
+                        {% if it.product.image_url %}
+                            <img src="{{ it.product.image_url }}" alt="{{ it.product.product_name }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/product-placeholder.jpg') }}" alt="placeholder">
+                        {% endif %}
+                    </div>
+                    <div class="details">
+                        <div class="pname">{{ it.product.product_name }}</div>
+                        <div class="pmeta">{{ it.product.brand if it.product.brand else '' }}</div>
+                        <div class="pmeta">Unit: Rp {{ '%.0f'|format(it.product.price or 0) }}</div>
+                        <div class="qty-controls">
+                            <form action="{{ url_for('customer_rt.cart_add', product_id=it.product.id) }}" method="get" style="display:inline">
+                                <input type="hidden" name="qty" value="1">
+                                <button type="submit" class="qty-btn">+</button>
+                            </form>
+                            <div class="qty-display">{{ it.quantity }}</div>
+                            <form action="{{ url_for('customer_rt.cart_remove', product_id=it.product.id) }}" method="post" style="display:inline">
+                                <button type="submit" class="remove-btn">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="line-price">Rp {{ '%.0f'|format(it.subtotal) }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <aside class="cart-summary">
+                <div class="summary-card">
+                    <div class="summary-row"><div>Items</div><div>{{ items|length }}</div></div>
+                    <div class="summary-row"><div>Subtotal</div><div>Rp {{ '%.0f'|format(total) }}</div></div>
+                    <hr style="border:none; height:1px; background:rgba(11,22,50,0.04); margin:10px 0;">
+                    <div class="summary-row summary-total"><div>Total</div><div>Rp {{ '%.0f'|format(total) }}</div></div>
+                    <form action="{{ url_for('customer_rt.cart_checkout') }}" method="post" style="margin-top:12px">
+                        <button class="btn-checkout" type="submit">Proceed to payment</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    {% else %}
+        <div class="cart-empty">Your cart is empty. Browse products and add items to start.</div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

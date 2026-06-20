@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Search results | Cartify{% endblock %}
+
+{% block content %}
+<div class="search-shell bg-transparent">
+    <style>
+        /* Immediate overrides to ensure updated look (cache-safe) */
+        .results-title{ color:#071133 !important; font-size:1.6rem !important; font-weight:900 !important; }
+        .results-sub{ color:#64748b !important; font-weight:700 !important; }
+        .btn-cta{ background: linear-gradient(90deg,#0ea5a4,#6366f1) !important; color:#fff !important; border:none !important; border-radius:10px !important; padding:8px 12px !important; }
+        .btn-ghost{ background:transparent !important; border:1px solid rgba(11,22,50,0.06) !important; color:#475569 !important; padding:8px 12px !important; border-radius:10px !important; }
+        .result-image{ min-height:220px !important; }
+    </style>
+    <div class="bg-white rounded-2xl shadow p-6 glass">
+        <div class="results-header flex items-start justify-between mb-6 gap-6">
+            <div class="flex-1">
+                <div class="eyebrow text-sm text-muted">Search</div>
+                <h2 class="results-title">Search results for "{{ q }}"</h2>
+                <p class="results-sub">Found {{ results|length }} items</p>
+            </div>
+
+            <div class="filters-panel w-80">
+                <form method="get" action="{{ url_for('customer_rt.search') }}" class="filter-form">
+                    <input type="hidden" name="q" value="{{ q }}" />
+                    <div class="grid grid-cols-1 gap-3">
+                        <select name="category" class="input-select">
+                                <option value="">All categories</option>
+                                {% for c in categories %}
+                                        <option value="{{ c }}" {% if selected.category==c %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                        </select>
+                        <select name="brand" class="input-select">
+                                <option value="">All brands</option>
+                                {% for b in brands %}
+                                        <option value="{{ b }}" {% if selected.brand==b %}selected{% endif %}>{{ b }}</option>
+                                {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <input name="min_price" type="number" step="0.01" placeholder="Min price" value="{{ selected.min_price }}" class="input-field" />
+                        <input name="max_price" type="number" step="0.01" placeholder="Max price" value="{{ selected.max_price }}" class="input-field" />
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-3">
+                        <label class="text-sm text-muted"><input type="checkbox" name="in_stock" value="1" {% if selected.in_stock %}checked{% endif %}/> In stock</label>
+                        <select name="sort" class="ml-auto input-select small">
+                                <option value="">Sort</option>
+                                <option value="price_asc" {% if selected.sort=='price_asc' %}selected{% endif %}>Price ↑</option>
+                                <option value="price_desc" {% if selected.sort=='price_desc' %}selected{% endif %}>Price ↓</option>
+                        </select>
+                    </div>
+
+                    <div class="text-right mt-4">
+                        <button type="submit" class="btn-cta">Apply</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if results and results|length > 0 %}
+            <div class="results-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for p in results %}
+                    <div class="result-card card transition-smooth">
+                        <a href="{{ url_for('customer_rt.product_detail', product_id=p.id) }}" class="block">
+                            <div class="result-image h-44 flex items-center justify-center overflow-hidden">
+                                <div class="placeholder">Image</div>
+                            </div>
+                        </a>
+
+                        <div class="p-4">
+                            <div class="text-sm p-title truncate" title="{{ p.product_name }}">{{ p.product_name }}</div>
+                            <div class="text-xs p-meta truncate" title="{{ p.brand }}">{{ p.brand if p.brand else (p.category if p.category else '—') }}</div>
+
+                            <div class="mt-3 flex items-center justify-between">
+                                <div class="price text-lg font-extrabold">$ {{ (p.price if p.price else 0) }}</div>
+                                <div class="flex items-center gap-2 text-sm text-muted">
+                                    <span class="text-yellow-500">★</span>
+                                    <span class="font-semibold">{{ '%.1f'|format(p.avg_rating if p.avg_rating is not none else 0) }}</span>
+                                    <span class="text-muted">({{ p.num_ratings if p.num_ratings is not none else 0 }})</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex items-center gap-3">
+                                <a href="{{ url_for('customer_rt.product_detail', product_id=p.id) }}" class="btn-ghost flex-1 text-center">Lihat detail</a>
+                                <a href="{{ url_for('customer_rt.cart_add', product_id=p.id) }}" class="btn-cta">Add</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-6 text-muted">No products match your search.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

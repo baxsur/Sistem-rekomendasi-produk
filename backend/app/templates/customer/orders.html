@@ -1,38 +1,46 @@
 {% extends 'base.html' %}
 
-{% block title %}Your Orders — MyShop{% endblock %}
+{% block title %}Your Orders | Cartify{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-lg shadow p-6">
-  <h2 class="text-lg font-semibold mb-4">Your Orders</h2>
+<div class="orders-shell">
+  <div class="card p-6">
+    <div class="orders-header">
+      <div>
+        <div class="orders-title">Your Orders</div>
+        <div class="orders-sub">Recent purchases and completed transactions</div>
+      </div>
+      <div>
+        <a class="btn-ghost" href="{{ url_for('customer_rt.dashboard') }}">Back to Dashboard</a>
+      </div>
+    </div>
 
-  {% if orders %}
-    <div class="space-y-4">
+    {% if orders %}
+      <div class="orders-list space-y-4">
       {% for item in orders %}
         {% set t = item.transaction %}
         {% set p = item.product %}
-        <div class="p-4 border rounded-md flex items-center justify-between">
+        <div class="order-row transition-smooth">
           <div>
             <div class="font-medium">{{ p.product_name if p else ('Product #' ~ t.product_id) }}</div>
-            <div class="text-sm text-slate-500">{{ t.transaction_date.strftime('%Y-%m-%d %H:%M') if t.transaction_date else '' }}</div>
+            <div class="order-meta">{{ t.transaction_date.strftime('%Y-%m-%d %H:%M') if t.transaction_date else '' }}</div>
           </div>
-          <div class="text-sm text-slate-600">Qty: {{ t.quantity }}</div>
-          <div class="text-sm font-medium">Rp {{ '%.2f'|format(t.total_amount) }}</div>
-          <div class="flex items-center gap-2">
-            <span class="px-2 py-1 rounded text-sm {% if t.status=='completed' %}bg-green-50 text-green-800{% elif t.status=='pending' %}bg-yellow-50 text-yellow-800{% else %}bg-slate-50 text-slate-700{% endif %}">{{ t.status }}</span>
+          <div class="order-qty">Qty: {{ t.quantity }}</div>
+          <div class="order-price">$ {{t.total_amount}}</div>
+          <div class="flex items-center gap-3">
+            {% set pill = 'other' %}
+            {% if t.status=='completed' %}{% set pill = 'completed' %}{% elif t.status=='pending' %}{% set pill = 'pending' %}{% endif %}
+            <span class="status-pill {{ pill }}">{{ t.status }}</span>
             {% if t.status == 'completed' %}
-              <a class="text-sm text-primary" href="{{ url_for('customer_rt.review_product', product_id=t.product_id) }}">Review</a>
+              <a class="btn-ghost text-sm" href="{{ url_for('customer_rt.review_product', product_id=t.product_id) }}">Review</a>
             {% endif %}
           </div>
         </div>
       {% endfor %}
-    </div>
-  {% else %}
-    <p class="text-slate-600">You have no orders yet.</p>
-  {% endif %}
-
-  <div class="mt-4">
-    <a class="inline-block text-sm text-slate-600" href="{{ url_for('customer_rt.dashboard') }}">Back to Dashboard</a>
+      </div>
+    {% else %}
+      <div class="p-6 text-muted">You have no orders yet.</div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

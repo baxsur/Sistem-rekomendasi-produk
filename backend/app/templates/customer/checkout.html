@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout — {{ product.product_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="card p-6">
+    <h2 class="text-xl font-semibold">Checkout: {{ product.product_name }}</h2>
+    <div class="mt-4 text-lg font-semibold">Price: {{ (product.price if product.price else 0) }}</div>
+
+    <form method="post" class="mt-4 space-y-4">
+        <div>
+          <label class="block text-sm">Quantity</label>
+          <input type="number" name="quantity" value="1" min="1" class="border rounded px-3 py-2 w-28">
+        </div>
+
+        <div>
+          <label class="block text-sm">Payment method</label>
+          <select name="payment_method" class="border rounded px-3 py-2 w-full">
+              <option value="card">Card</option>
+              <option value="paypal">PayPal</option>
+              <option value="cod">Cash on Delivery</option>
+          </select>
+        </div>
+
+        <div class="mt-2 flex gap-2">
+            <button type="submit" class="btn-primary">Confirm checkout</button>
+            <a href="{{ url_for('customer_rt.product_detail', product_id=product.id) }}" class="btn-ghost">Back</a>
+        </div>
+    </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.product_name }} | Cartify{% endblock %}
+
+{% block content %}
+<div class="product-detail container">
+    <div class="grid">
+        <div class="product-media">
+            {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.product_name }}" />
+            {% else %}
+                <div class="placeholder">No image available</div>
+            {% endif %}
+        </div>
+
+        <div>
+            <div class="product-info">
+                <h2 class="text-2xl font-bold">{{ product.product_name }}</h2>
+                <div class="text-sm product-meta">{{ product.brand if product.brand else product.category }}</div>
+                <div class="mt-4 product-price">$ {{ '%.0f'|format(product.price if product.price else 0) }}</div>
+                <div class="mt-2 product-meta">Rating: {{ '%.1f'|format(product.avg_rating if product.avg_rating is not none else 0) }} ({{ product.num_ratings or 0 }})</div>
+
+                <form action="{{ url_for('customer_rt.cart_add', product_id=product.id) }}" method="get" class="mt-6">
+                    <div class="flex items-center gap-3">
+                        <label class="text-sm">Quantity</label>
+                        <input type="number" name="qty" value="1" min="1" class="qty-input" />
+                        <button type="submit" class="btn-primary">Add to cart</button>
+                    </div>
+
+                    <div class="product-actions">
+                        <button type="button" onclick="history.back()" class="btn-ghost">Back</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

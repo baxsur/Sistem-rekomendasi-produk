@@ -3,56 +3,288 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}MyShop{% endblock %}</title>
+    <title>{% block title %}Cartify{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>     
+      html,body { height:100%; }
+      body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+
+      :root { --base-font-size: 16px; }
+      html { font-size: var(--base-font-size); }
+      body { line-height: 1.45; font-size: 1rem; }
+
+      h1,h2,h3,h4,h5,h6 { color: var(--text-on-dark); margin:0 0 .4rem 0; line-height:1.1; }
+      h1 { font-size: 1.875rem; } 
+      h2 { font-size: 1.25rem; } 
+      h3 { font-size: 1.125rem; }  
+
+      p, a, label, button, input, select, textarea { font-family: inherit; }
+
+      .container { max-width: 1200px; margin: 0 auto; padding-left: 1rem; padding-right: 1rem; }
+      .max-w-6xl { max-width: 1200px; }
+
+      .gap-sm { gap: 8px; }
+      .gap-md { gap: 12px; }
+      .gap-lg { gap: 20px; }
+
+      input[type="text"], input[type="search"], input[type="number"], select, textarea {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-weak);
+        color: var(--text-on-dark);
+        padding: 10px 12px;
+        border-radius: 10px;
+        outline: none;
+      }
+      input:focus, select:focus, textarea:focus { box-shadow: 0 6px 20px rgba(16,24,40,0.28); border-color: rgba(123,189,232,0.9); }
+      label { color: var(--muted); font-size: 0.9rem; }
+
+      .btn-primary { font-weight: 700; letter-spacing: .2px; }
+      .btn-ghost { color: var(--text-on-dark); }
+      .btn-primary:active, .btn-ghost:active { transform: translateY(1px); }
+
+      .card { padding: 18px; }
+      .card .h-40 { height: 160px; }
+
+      .product-grid { display:grid; grid-template-columns: repeat(2,1fr); gap:16px; }
+      @media(min-width:768px){ .product-grid { grid-template-columns: repeat(3,1fr); } }
+      @media(min-width:1024px){ .product-grid { grid-template-columns: repeat(4,1fr); gap:20px; } }
+
+      a { color: inherit; }
+      a:focus { outline: 3px solid rgba(123,189,232,0.18); outline-offset: 3px; }
+
+      .rounded-lg { border-radius: 12px; }
+      .muted { color: var(--muted-weak); }
+
+      :root {
+        --c-900: #001D39; 
+        --c-800: #0A4174;
+        --c-700: #49769F;
+        --c-600: #4E8EA2;
+        --c-500: #6EA2B3;
+        --c-400: #7BBDE8;
+        --c-300: #BDD8E9; 
+
+        --brand-primary: var(--c-600);
+        --brand-accent: var(--c-400);
+        --bg-page: #071026;
+        --text-on-dark: #e6f7ff;
+        --muted: rgba(255,255,255,0.78);
+        --muted-weak: rgba(255,255,255,0.55);
+        --glass: rgba(255,255,255,0.04);
+        --border-weak: rgba(255,255,255,0.08);
+      }
+
+      body {
+        min-height: 100vh;
+        background-color: var(--bg-page);
+        background-image: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        color: var(--text-on-dark);
+      }
+
+      .hero-panel {
+        border-radius: 12px;
+        overflow: hidden;
+        color: var(--text-on-dark);
+        background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2));
+        background-image:
+          linear-gradient(180deg, rgba(2,8,18,0.9) 0%, rgba(2,8,18,0.95) 70%),
+          radial-gradient(520px 220px at 54% 64%, rgba(122,99,241,0.18), rgba(123,189,232,0.06) 30%, transparent 60%),
+          repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 2px, rgba(123,189,232,0.02) 2px 10px, transparent 10px 20px);
+        background-blend-mode: normal, screen, overlay;
+        box-shadow: 0 20px 60px rgba(2,8,18,0.7);
+        position: relative;
+      }
+
+      .hero-panel::after {
+        content: '';
+        position: absolute;
+        right: 4%;
+        top: 6%;
+        bottom: 6%;
+        width: 42%;
+        pointer-events: none;
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(123,189,232,0.06) 20%, rgba(78,143,225,0.14) 45%, rgba(123,99,241,0.18) 70%, rgba(255,255,255,0) 100%);
+        mix-blend-mode: screen;
+        border-radius: 12px;
+      }
+
+      .hero-inner-overlay {
+        background: var(--glass);
+        border-radius: 10px;
+        padding: 18px;
+      }
+
+      .btn-primary { background: linear-gradient(90deg,var(--brand-accent),var(--brand-primary)); color: white; padding: 0.5rem 0.9rem; border-radius: 10px; display:inline-flex; align-items:center; gap:8px; box-shadow:0 10px 30px rgba(9,20,40,0.45); border: none; }
+      .btn-ghost { background: transparent; color: var(--text-on-dark); border: 1px solid var(--border-weak); padding:0.45rem 0.8rem; border-radius:10px }
+      .card { background: rgba(255,255,255,0.98); color: #0f1724; border-radius:14px; box-shadow:0 10px 30px rgba(2,6,23,0.06); }
+      .card-ghost { background: rgba(255,255,255,0.03); color: var(--text-on-dark); border-radius:12px; }
+      .text-muted { color: var(--muted); }
+      .text-muted-weak { color: var(--muted-weak); }
+      .shadow-soft { box-shadow: 0 10px 30px rgba(2,8,18,0.35); }
+      .rounded-xl-2 { border-radius: 16px; }
+      .glass { background: var(--glass); backdrop-filter: blur(6px); border: 1px solid var(--border-weak); }
+      .transition-smooth { transition: all .22s cubic-bezier(.2,.9,.2,1); }
+
+      .nav-link { color: var(--muted); padding: 6px 8px; border-radius:8px; font-weight:600; }
+      .nav-link:hover { background: rgba(255,255,255,0.03); color: var(--text-on-dark); }
+      .search-input { background: rgba(255,255,255,0.03); border: 1px solid var(--border-weak); color: var(--text-on-dark); }
+
+      .site-nav a { color: rgba(34, 46, 56, 0.75); font-weight: 600; }
+      .site-nav a:hover { color: #0f766e; }
+      .site-footer { color: #94a3b8; }
+    </style>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              primary: '#0f766e', /* teal-700 */
-              accent: '#06b6d4', /* cyan-500 */
-              surface: '#f8fafc', /* slate-50 */
+              primary: '#0f766e',
+              accent: '#06b6d4', 
+              surface: '#f8fafc', 
             }
           }
         }
       }
     </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3">
   </head>
-  <body class="min-h-screen bg-surface text-slate-800">
-    <header class="bg-white shadow-sm">
-      <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="{{ url_for('customer_rt.dashboard') }}" class="text-xl font-semibold text-primary">MyShop</a>
-        <nav class="space-x-4">
-          {% if session.get('user_id') %}
-            <a href="{{ url_for('customer_rt.dashboard') }}" class="text-slate-600 hover:text-primary">Dashboard</a>
-            <a href="{{ url_for('customer_rt.orders') }}" class="text-slate-600 hover:text-primary">Orders</a>
-            <a href="{{ url_for('customer_rt.profile') }}" class="text-slate-600 hover:text-primary">Profile</a>
-            <a href="{{ url_for('auth.logout') }}" class="text-red-600 hover:underline">Logout</a>
-          {% else %}
-            <a href="{{ url_for('auth.login') }}" class="text-slate-600 hover:text-primary">Login</a>
-            <a href="{{ url_for('auth.register') }}" class="text-slate-600 hover:text-primary">Register</a>
-          {% endif %}
-        </nav>
+    <body class="app-bg min-h-screen bg-surface text-slate-800">
+    <header class="fixed inset-x-0 top-0 z-40">
+      <div class="max-w-6xl mx-auto px-6 py-4">
+        <div class="flex items-center justify-between header-row">
+          <div class="flex items-center gap-4">
+            <a href="{{ url_for('customer_rt.dashboard') }}" class="flex items-center gap-3">
+              <img src="{{ url_for('static', filename='images/cartify-logo.svg') }}" alt="Cartify" class="h-9 w-auto"/>
+            </a>
+            <nav class="hidden md:flex items-center gap-4">
+              <a href="{{ url_for('customer_rt.dashboard') }}" class="nav-link text-muted">Dashboard</a>
+              <a href="{{ url_for('customer_rt.orders') }}" class="nav-link text-muted">Orders</a>
+              <a href="{{ url_for('customer_rt.profile') }}" class="nav-link text-muted">Profile</a>
+            </nav>
+          </div>
+
+          <div class="flex-1 px-6">
+            {% if session.get('user_id') %}
+            <form action="{{ url_for('customer_rt.search') }}" method="get" class="max-w-2xl mx-auto">
+              <div class="relative">
+                <input name="q" type="search" placeholder="Search products..." value="{{ request.args.get('q','') }}" class="search-input w-full px-4 py-2 rounded-lg transition-smooth" />
+                <button type="submit" class="btn-primary absolute right-1 top-1">Search</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="max-w-2xl mx-auto">
+              <div class="search-input glass rounded-lg px-4 py-2 text-muted">Login untuk mencari produk</div>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="flex items-center gap-3">
+            {% if session.get('user_id') %}
+              {# cart count calc #}
+              {% set _cart = session.get('cart', {}) %}
+              {% set ns = namespace(total=0) %}
+              {% for _k, _v in _cart.items() %}
+                {% set ns.total = ns.total + (_v or 0) %}
+              {% endfor %}
+              <div class="hidden sm:flex items-center gap-3">
+                <a href="{{ url_for('customer_rt.view_cart') }}" class="cart-btn" title="View cart">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="cart-badge">{{ ns.total }}</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}" class="btn-ghost">Logout</a>
+              </div>
+              <div class="sm:hidden">
+                <a href="{{ url_for('customer_rt.view_cart') }}" class="cart-btn" title="View cart">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="cart-badge">{{ ns.total }}</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}" class="btn-ghost">Logout</a>
+              </div>
+            {% else %}
+              <a href="{{ url_for('auth.login') }}" class="btn-ghost">Login</a>
+              <a href="{{ url_for('auth.register') }}" class="btn-primary">Register</a>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </header>
+    <div style="height:96px;"></div>
 
-    <main class="max-w-5xl mx-auto px-4 py-8">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <div class="space-y-2 mb-4">
-            {% for category, msg in messages %}
-              <div class="p-3 rounded-md text-sm {% if category=='success' %}bg-green-50 text-green-800{% elif category=='danger' or category=='error' %}bg-red-50 text-red-800{% else %}bg-blue-50 text-slate-800{% endif %}">{{ msg }}</div>
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endwith %}
+    <main class="max-w-6xl mx-auto px-6 py-10">
+      {# Toast container for popped notifications (flashed messages will appear here) #}
+      <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+      <script>
+        (function(){
+          const flashed = {{ get_flashed_messages(with_categories=true)|tojson|safe }} || [];
+          if(!flashed || !flashed.length) return;
+          function createToast(category, text){
+            const container = document.getElementById('toast-container');
+            if(!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-' + (category||'info');
+            toast.setAttribute('role','status');
+            toast.innerHTML = `
+              <div class="toast-body">\n
+                <div class=\"toast-icon\">${category==='success'? '✓' : category==='danger' || category==='error'? '⚠' : 'ℹ'}</div>
+                <div class=\"toast-text\">${String(text)}</div>
+                <button class=\"toast-close\" aria-label=\"Close\">×</button>\n
+              </div>`;
+            container.appendChild(toast);
+            const remove = ()=>{ toast.classList.add('toast-hide'); setTimeout(()=> toast.remove(),400); };
+            toast.querySelector('.toast-close').addEventListener('click', remove);
+            setTimeout(remove, 4000);
+            requestAnimationFrame(()=> toast.classList.add('toast-show'));
+          }
+          for(const [cat, msg] of flashed){ createToast(cat, msg); }
+        })();
+      </script>
 
       {% block content %}{% endblock %}
     </main>
 
-    <footer class="mt-12 py-6 bg-white">
-      <div class="max-w-5xl mx-auto px-4 text-sm text-slate-500">© {{ current_year }} MyShop</div>
+    <footer class="mt-12 py-12">
+      <div class="max-w-6xl mx-auto px-6 site-footer">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="{{ url_for('customer_rt.dashboard') }}" class="flex items-center gap-3">
+              <img src="{{ url_for('static', filename='images/cartify-logo.svg') }}" alt="Cartify" class="h-8 w-auto"/>
+            </a>
+            <p class="muted small mt-3">Modern product recommendations that convert. Built for small businesses and shops.</p>
+            <div class="mt-4 muted small">© {{ current_year }} Cartify</div>
+          </div>
+
+          <div class="footer-links">
+            <h4>Product</h4>
+            <ul>
+              <li><a href="#">Features</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">Integrations</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-links">
+            <h4>Company</h4>
+            <ul>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-newsletter">
+            <h4>Get updates</h4>
+            <p class="muted small">Join our newsletter for product updates and tips.</p>
+            <form action="#" method="post" class="newsletter-form" onsubmit="return false;">
+              <input type="email" placeholder="Your email" aria-label="Your email" />
+              <button class="btn-cta" type="submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </footer>
+    {# Floating cart removed per design request #}
+
   </body>
 </html>
